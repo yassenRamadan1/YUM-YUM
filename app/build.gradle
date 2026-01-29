@@ -38,4 +38,26 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.adapter.rxjava3
+
+    implementation libs.rxandroid
+    implementation libs.rxjava
+
+    // 3. UI Components & Images
+    implementation libs.glide
+    annotationProcessor libs.compiler
+    implementation libs.lottie
+    implementation libs.circleimageview // Circular Images (Profiles)
+
+    // 4. Local Database (Room)
+    implementation libs.room.runtime
+    implementation libs.room.rxjava3 // Room + RxJava support
+    annotationProcessor libs.room.compiler
+
+    // 5. Navigation
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
 }
