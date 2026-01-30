@@ -1,8 +1,15 @@
 package com.example.yum_yum;
 
+import static java.lang.Thread.sleep;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
+import android.view.animation.AnticipateInterpolator;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,17 +30,43 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 1. Install the Splash Screen (MUST be before setContentView)
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EdgeToEdge.enable(this);
 
+        splashScreen.setOnExitAnimationListener(splashScreenViewProvider -> {
+            final View splashScreenView = splashScreenViewProvider.getView();
+            ObjectAnimator slideUp = ObjectAnimator.ofFloat(
+                    splashScreenView,
+                    View.TRANSLATION_Y,
+                    0f,
+                    -splashScreenView.getHeight()
+            );
+            slideUp.setInterpolator(new AnticipateInterpolator());
+            slideUp.setDuration(500L);
+
+            slideUp.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    splashScreenViewProvider.remove();
+                }
+            });
+            slideUp.start();
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
         // 2. Configure the Splash Screen to wait for data
-        splashScreen.setKeepOnScreenCondition(() -> isKeepOn);
+//        splashScreen.setKeepOnScreenCondition(() -> isKeepOn);
 
         // 3. Run your RxJava Logic (Check Auth / Database)
 //        checkUserStatus();
+
     }
 //
 //    private void checkUserStatus() {
