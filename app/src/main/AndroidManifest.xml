@@ -11,7 +11,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
 
-        android:theme="@style/Theme.FoodPlanner">
+        android:theme="@style/Theme.YUMYUM">
 
         <activity
             android:name=".MainActivity"

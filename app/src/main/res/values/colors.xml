@@ -12,4 +12,5 @@
     <color name="error_color">#B00020</color>
 
     <color name="chip_background_light">#FFF0F3</color>
+    <color name="white">#FFFFFF</color>
 </resources>
