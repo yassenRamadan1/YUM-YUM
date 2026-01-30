@@ -47,4 +47,24 @@
         <item name="android:hint">@null</item> <item name="android:minHeight">56dp</item>
     </style>
 
+    <style name="Widget.Yum.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/surface_color</item>
+        <item name="itemShapeAppearanceOverlay">@style/ThemeOverlay.Yum.BottomNav</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="labelVisibilityMode">selected</item> <item name="itemTextAppearanceActive">@style/Yum.Text.LabelSmall</item>
+        <item name="itemTextAppearanceInactive">@style/Yum.Text.LabelSmall</item>
+    </style>
+
+    <style name="ThemeOverlay.Yum.BottomNav" parent="">
+        <item name="colorSecondaryContainer">@color/chip_background_light</item>
+        <item name="colorOnSecondaryContainer">@color/yum_pink</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+    </style>
+
+    <style name="Yum.Text.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/work_sans</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>

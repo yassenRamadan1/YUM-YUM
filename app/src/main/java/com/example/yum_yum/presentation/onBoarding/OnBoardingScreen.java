@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 
 import com.example.yum_yum.R;
 
-public class OnBoarding extends Fragment {
+public class OnBoardingScreen extends Fragment {
 
 
 
-    public OnBoarding() {
+    public OnBoardingScreen() {
         // Required empty public constructor
     }
 

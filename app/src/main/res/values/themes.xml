@@ -1,36 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.YUMYUM" parent="Theme.Material3.DayNight.NoActionBar">
 
-    <style name="Theme.YUMYUM" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/text_on_primary</item>
+
+        <item name="colorSecondaryContainer">@color/chip_background_light</item>
+        <item name="colorOnSecondaryContainer">@color/text_primary</item>
+
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="colorSurface">@color/surface_color</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
         <item name="android:statusBarColor">@color/background_color</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowBackground">@color/background_color</item>
-    </style>
-
-    <style name="Text">
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="Text.Header">
-        <item name="android:textSize">28sp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="Text.SubHeader">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/background_color</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/yum_yum_logo</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.YUMYUM</item>
     </style>
-
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/nav_selected_item</item>
+    </style>
 </resources>

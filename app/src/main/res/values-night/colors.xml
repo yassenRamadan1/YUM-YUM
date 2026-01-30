@@ -9,4 +9,7 @@
     <color name="error_color">#CF6679</color>
 
     <color name="chip_background_light">#3E272B</color>
+    <color name="nav_selected_item">#DEFF355F</color>
+    <color name="nav_selected_logo_color">#FAFAFA</color>
+    <color name="nav_non_selected_logo_color">#99FAFAFA</color>
 </resources>

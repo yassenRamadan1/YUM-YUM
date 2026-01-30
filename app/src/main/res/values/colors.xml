@@ -13,4 +13,9 @@
 
     <color name="chip_background_light">#FFF0F3</color>
     <color name="white">#FFFFFF</color>
+    <color name="yum_pink">#44FF355F</color>
+    <color name="black">#000000</color>
+    <color name="nav_selected_item">#61E32227</color>
+    <color name="nav_selected_logo_color">#121212</color>
+    <color name="nav_non_selected_logo_color">#99121212</color>
 </resources>
