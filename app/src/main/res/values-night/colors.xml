@@ -7,7 +7,7 @@
 
     <color name="input_background">#2C2C2C</color> <color name="divider_color">#2C2C2C</color>
     <color name="error_color">#CF6679</color>
-
+    <color name="white">#000000</color>
     <color name="chip_background_light">#3E272B</color>
     <color name="nav_selected_item">#DEFF355F</color>
     <color name="nav_selected_logo_color">#FAFAFA</color>

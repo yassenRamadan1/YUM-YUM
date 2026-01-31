@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="Enter_as_a_guest">Enter as a guest</string>
+    <string name="logo_description">this is yum yum logo</string>
+    <string name="Login">Login</string>
+</resources>

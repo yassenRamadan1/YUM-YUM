@@ -8,7 +8,9 @@
     <dimen name="margin_tiny">2dp</dimen>
     <dimen name="margin_large">16dp</dimen>
     <dimen name="margin_large_x">24dp</dimen>
-    <dimen name="margin_large_xx">49dp</dimen>
+    <dimen name="margin_large_xx">48dp</dimen>
+    <dimen name="margin_large_xxx">72dp</dimen>
+    <dimen name="margin_large_xxxx">96dp</dimen>
     <dimen name="margin_medium">8dp</dimen>
 
     <dimen name="padding_large">16dp</dimen>

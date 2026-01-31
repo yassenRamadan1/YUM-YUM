@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color"
+    android:layout_gravity="center_horizontal"
+    android:padding="@dimen/padding_large"
+    tools:context=".presentation.welcome.WelcomeScreen">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Enter_as_a_guest"
+        style="@style/Yum.Text.Body"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/margin_large"
+        android:textColor="@color/primary"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/tvEnterAsGuest" />
+    <ImageView
+        android:layout_width="260dp"
+        android:layout_height="152dp"
+        android:src="@drawable/logo"
+        android:layout_marginVertical="@dimen/margin_large_xxxx"
+        android:contentDescription="@string/logo_description"
+        android:layout_gravity="center_horizontal" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="@dimen/margin_large_xxxx"
+        android:text="@string/Signup"
+        style="@style/Yum.Button.Primary"
+        android:id="@+id/btnGetStarted" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/Login"
+        style="@style/Yum.Button.Secondary"
+        android:id="@+id/btnLogin" />
+
+
+</LinearLayout>

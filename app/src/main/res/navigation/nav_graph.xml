@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/onBoardingScreen">
+    app:startDestination="@id/welcomeScreen">
 
     <fragment
-        android:id="@+id/onBoardingScreen"
-        android:name="com.example.yum_yum.presentation.onBoarding.OnBoardingScreen"
-        android:label="fragment_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" />
+        android:id="@+id/welcomeScreen"
+        android:name="com.example.yum_yum.presentation.welcome.WelcomeScreen"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" />
     <fragment
         android:id="@+id/weaklyMealsScreen"
         android:name="com.example.yum_yum.presentation.weaklyMeals.WeaklyMealsScreen"

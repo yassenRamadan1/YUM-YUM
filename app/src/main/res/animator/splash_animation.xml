@@ -1,6 +1,6 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <objectAnimator
-        android:duration="800"
+        android:duration="1000"
         android:propertyName="scaleX"
         android:valueFrom="0.0"
         android:valueTo="0.75"
@@ -8,7 +8,7 @@
         android:interpolator="@android:anim/overshoot_interpolator"/>
 
     <objectAnimator
-        android:duration="800"
+        android:duration="1000"
         android:propertyName="scaleY"
         android:valueFrom="0.0"
         android:valueTo="0.75"
