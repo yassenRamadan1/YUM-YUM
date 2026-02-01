@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(bottomNav, navController);
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                if (id == R.id.welcomeScreen || id == R.id.loginScreen) {
+                if (id == R.id.welcomeScreen || id == R.id.loginScreen || id == R.id.registerFragment) {
                     bottomNav.setVisibility(View.GONE);
                 } else {
                     bottomNav.setVisibility(View.VISIBLE);

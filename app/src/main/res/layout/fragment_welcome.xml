@@ -32,7 +32,7 @@
         android:layout_marginTop="@dimen/margin_large_xxxx"
         android:text="@string/Signup"
         style="@style/Yum.Button.Primary"
-        android:id="@+id/btnGetStarted" />
+        android:id="@+id/signUp" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="56dp"

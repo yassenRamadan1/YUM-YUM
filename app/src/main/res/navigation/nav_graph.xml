@@ -9,7 +9,17 @@
         android:id="@+id/welcomeScreen"
         android:name="com.example.yum_yum.presentation.welcome.WelcomeScreen"
         android:label="fragment_welcome"
-        tools:layout="@layout/fragment_welcome" />
+        tools:layout="@layout/fragment_welcome" >
+        <action
+            android:id="@+id/action_welcomeScreen_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_welcomeScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_welcomeScreen_to_homeScreen"
+            app:destination="@id/homeScreen" />
+    </fragment>
     <fragment
         android:id="@+id/weaklyMealsScreen"
         android:name="com.example.yum_yum.presentation.weaklyMeals.WeaklyMealsScreen"
@@ -24,7 +34,14 @@
         android:id="@+id/loginScreen"
         android:name="com.example.yum_yum.presentation.login.LoginScreen"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginScreen_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginScreen_to_homeScreen"
+            app:destination="@id/homeScreen" />
+    </fragment>
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.example.yum_yum.presentation.home.HomeScreen"
@@ -39,5 +56,12 @@
         android:id="@+id/registerFragment"
         android:name="com.example.yum_yum.presentation.register.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" />
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_registerFragment_to_homeScreen"
+            app:destination="@id/homeScreen" />
+    </fragment>
 </navigation>
