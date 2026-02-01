@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 //        checkUserStatus();
 
     }
+
 //
 //    private void checkUserStatus() {
 //        // Simulating a check (e.g., Firebase or SharedPreferences)

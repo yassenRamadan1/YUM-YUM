@@ -35,4 +35,9 @@
         android:name="com.example.yum_yum.presentation.search.SearchScreen"
         android:label="fragment_search_screen"
         tools:layout="@layout/fragment_search_screen" />
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.yum_yum.presentation.register.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" />
 </navigation>

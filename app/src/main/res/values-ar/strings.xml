@@ -2,5 +2,15 @@
 <resources>
     <string name="Enter_as_a_guest">Enter as a guest</string>
     <string name="logo_description">this is yum yum logo</string>
-    <string name="Login">Login</string>
+    <string name="login">Login</string>
+    <string name="Guest">Guest</string>
+    <string name="username">username</string>
+    <string name="password">Password</string>
+    <string name="Or_login_with">Or Login with</string>
+    <string name="login_with_google">Login with google</string>
+    <string name="Don_t_have_an_account_Yet">Dont have an account Yet</string>
+    <string name="Sign_Up">Sign up</string>
+    <string name="email">email</string>
+    <string name="sign_up_with_google">sign up with google</string>
+    <string name="already_have_an_account">already have an account</string>
 </resources>

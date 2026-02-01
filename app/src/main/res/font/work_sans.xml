@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <font app:font="@font/worksans_regular" app:fontStyle="normal" app:fontWeight="400" />
     <font app:font="@font/worksans_italic" app:fontStyle="italic" app:fontWeight="400" />
-
     <font app:font="@font/worksans_medium" app:fontStyle="normal" app:fontWeight="500" />
 
     <font app:font="@font/worksans_semibold" app:fontStyle="normal" app:fontWeight="600" />

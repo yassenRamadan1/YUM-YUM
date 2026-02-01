@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".presentation.login.LoginScreen">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="start"
+    android:background="@color/background_color"
+    tools:context=".presentation.register.RegisterFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large_x"
-            android:text="@string/login" />
+            android:text="@string/Sign_Up" />
 
         <TextView
             style="@style/Yum.Text.LabelNormal"
@@ -38,13 +38,44 @@
             android:text="@string/username" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/username_edittext"
-            style="@style/Yum.Input.Box"
+            android:id="@+id/username_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginEnd="@dimen/margin_large" />
+            android:layout_marginEnd="@dimen/margin_large">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_edit_text"
+                style="@style/Yum.Input.Box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            style="@style/Yum.Text.LabelNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_large_x"
+            android:text="@string/email" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/email_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin_large">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email_edit_text"
+                style="@style/Yum.Input.Box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             style="@style/Yum.Text.LabelNormal"
@@ -68,19 +99,18 @@
                 style="@style/Yum.Input.Box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/password"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_button"
+            android:id="@+id/signup_button"
             style="@style/Yum.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large_x"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="@string/login" />
+            android:text="@string/Sign_Up" />
 
         <TextView
             style="@style/Yum.Text.LabelSmall"
@@ -91,36 +121,38 @@
             android:text="@string/Or_login_with" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_using_google_button"
+            android:id="@+id/signup_using_google_button"
             style="@style/Yum.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="@string/login_with_google"
+            android:text="@string/sign_up_with_google"
             app:icon="@drawable/ic_google"
             app:iconTint="@color/text_primary" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/Don_t_have_an_account_Yet"
+            android:text="@string/already_have_an_account"
             style="@style/Yum.Text.LabelSmall" />
+
         <TextView
-            android:id="@+id/tvSignUp"
+            android:id="@+id/tvLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/Sign_Up"
+            android:text="@string/login"
             android:textColor="@color/primary"
             style="@style/Yum.Text.LabelSmall" />
     </LinearLayout>
 
     <com.google.android.material.loadingindicator.LoadingIndicator
+        android:id="@+id/loadingIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/loadingIndicator"
         android:layout_gravity="center"
         android:visibility="gone"/>
 
