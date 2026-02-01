@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    app:layoutDescription="@xml/fragment_food_detail_scene"
+    tools:context=".presentation.mealDetails.MealDetailsScreen">
+
+
+    <ImageView
+        android:id="@+id/image_background"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/dish_name"
+        android:scaleType="fitXY"
+        android:src="@drawable/quick_recipes_image"
+        app:layout_constraintBottom_toTopOf="@id/guidline_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/AppBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidline_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.45" />
+
+
+    <LinearLayout
+        android:id="@+id/sheet_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:background="@drawable/card_scroll"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/button_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guidline"
+        app:layout_constraintVertical_bias="0.0"
+        tools:context=".ui.FoodDetail.FoodDetailFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:weightSum="4"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/icon_calendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="start"
+                android:contentDescription="@string/calender_icon"
+                android:src="@drawable/ic_calnder_primary" />
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"/>
+            <ImageView
+            android:id="@+id/icon_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:contentDescription="@string/love_icon"
+            android:src="@drawable/ic_love_icon_white" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/text_dish_name"
+            style="@style/Yum.Text.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/text_VLarge"
+            android:layout_marginEnd="@dimen/text_VLarge"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/dish_name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_VLarge" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="@dimen/padding_large"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_flag"
+                app:tint="@color/text_primary"/>
+
+            <TextView
+                android:id="@+id/text_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/italian"
+                style="@style/Yum.Text.LabelNormal"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/ic_circle" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_food"
+               />
+
+            <TextView
+                android:id="@+id/text_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="Vegetarian"
+                style="@style/Yum.Text.LabelNormal"/>
+        </LinearLayout>
+
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chips_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_instructions"
+                style="@style/Chips.toggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/instructions" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_ingredient"
+                style="@style/Chips.toggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ingredients" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_video"
+                style="@style/Chips.toggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/video" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="6dp"
+            android:background="@color/text_hint"/>
+
+        <TextView
+            android:id="@+id/text_instructions"
+            style="@style/Yum.Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/instructions_placeholder"
+            android:lineSpacingExtra="4dp"
+            android:visibility="visible"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"
+            tools:listitem="@layout/item_ingredient"
+            tools:itemCount="6"/>
+
+        <WebView
+            android:id="@+id/webview_video"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:visibility="gone"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

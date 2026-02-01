@@ -7,6 +7,10 @@
     android:layout_gravity="start"
     android:background="@color/background_color"
     tools:context=".presentation.register.RegisterFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -148,7 +152,7 @@
             android:textColor="@color/primary"
             style="@style/Yum.Text.LabelSmall" />
     </LinearLayout>
-
+    </ScrollView>
     <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/loadingIndicator"
         android:layout_width="wrap_content"

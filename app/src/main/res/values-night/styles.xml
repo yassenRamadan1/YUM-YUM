@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ItemIcon">
+        <![CDATA[    <style name="ItemIcon">         <item name="android:layout_width">@dimen/small_icon_size</item>         <item name="android:layout_height">@dimen/small_icon_size</item>         <item name="android:layout_marginStart">@dimen/margin_medium</item>         <item name="android:layout_marginBottom">@dimen/margin_medium</item>     </style>]]></style>
+</resources>

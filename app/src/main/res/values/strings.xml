@@ -16,4 +16,16 @@
     <string name="email">email</string>
     <string name="sign_up_with_google">sign up with google</string>
     <string name="already_have_an_account">already have an account</string>
+    <string name="meal_of_the_day">Meal of the day</string>
+    <string name="img_description">"this is meal description "</string>
+    <string name="country_of_the_day">Country of the day</string>
+    <string name="dish_name">dish name</string>
+    <string name="love_icon">favorite icon</string>
+    <string name="calender_icon">calnder icon</string>
+    <string name="instructions">instructions</string>
+    <string name="ingredient">ingredient</string>
+    <string name="ingredients">ingredient</string>
+    <string name="video">video</string>
+    <string name="instructions_placeholder">pla pla pla pla 123 pla pla\npla 545456 pla</string>
+    <string name="italian">italian</string>
 </resources>
