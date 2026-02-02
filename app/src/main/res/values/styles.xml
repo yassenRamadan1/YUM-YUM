@@ -188,4 +188,8 @@
         <item name="checkedIconTint">@color/white</item>
         <item name="chipBackgroundColor">@color/chip_background</item>
     </style>
+
+    <style name="rounded_corner">
+        <item name="cornerSize">16dp</item>
+    </style>
 </resources>

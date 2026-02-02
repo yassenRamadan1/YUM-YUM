@@ -28,4 +28,6 @@
     <string name="video">video</string>
     <string name="instructions_placeholder">pla pla pla pla 123 pla pla\npla 545456 pla</string>
     <string name="italian">italian</string>
+    <string name="popular_dishes">this is image for favorite meal</string>
+    <string name="here_you_can_add_your_favourite_recieps">No Favorite Meals yet</string>
 </resources>

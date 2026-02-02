@@ -23,5 +23,6 @@
     </style>
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/nav_selected_item</item>
+        <item name="indicatorSize">@dimen/margin_large_xx</item>
     </style>
 </resources>

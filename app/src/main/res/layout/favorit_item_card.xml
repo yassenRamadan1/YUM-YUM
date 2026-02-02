@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/margin_large"
+    android:layout_marginBottom="@dimen/margin_medium"
+    android:backgroundTint="@color/background_color"
+    app:cardCornerRadius="@dimen/radius_medium"
+    app:cardElevation="@dimen/no_elevation">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_meal"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/popular_dishes"
+            android:scaleType="centerCrop"
+            android:src="@drawable/quick_recipes_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearance="@style/rounded_corner"
+            app:shapeAppearanceOverlay="@style/CardView.Dark" />
+
+        <TextView
+            android:id="@+id/text_recipeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:ellipsize="end"
+            style="@style/Yum.Text.LabelLarge"
+            android:maxLines="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/line"
+            app:layout_constraintStart_toEndOf="@+id/image_meal"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Meal name" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:chainUseRtl="false"
+            app:layout_constraintGuide_percent="0.75" />
+
+
+        <TextView
+            android:id="@+id/instructions_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="2"
+            style="@style/Yum.Text.LabelNormal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/favourite_icon"
+            app:layout_constraintStart_toEndOf="@+id/image_meal"
+            app:layout_constraintTop_toBottomOf="@+id/text_recipeName"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Lorem ipsum dolor sit amet consectetur. Nunc .... " />
+
+        <ImageView
+            android:id="@+id/favourite_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/here_you_can_add_your_favourite_recieps"
+            android:src="@drawable/ic_love_icon"
+            app:layout_constraintBottom_toBottomOf="@+id/image_meal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/image_meal" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
