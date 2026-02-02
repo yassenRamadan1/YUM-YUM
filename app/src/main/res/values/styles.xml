@@ -188,8 +188,18 @@
         <item name="checkedIconTint">@color/white</item>
         <item name="chipBackgroundColor">@color/chip_background</item>
     </style>
-
     <style name="rounded_corner">
         <item name="cornerSize">16dp</item>
+    </style>
+
+    <!--    Image Parent-->
+    <style name="ImageRecItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <!--    Image Food-->
+    <style name="ImageRecItem.Food">
+    <item name="android:layout_height">match_parent</item>
     </style>
 </resources>

@@ -27,4 +27,5 @@
     <color name="nav_non_selected_logo_color">#99FAFAFA</color>
     <color name="liner_color">#121212</color>
     <color name="dark_white">#DEFAFAFA</color>
+    <color name="stroke_search_color">#29121212</color>
 </resources>

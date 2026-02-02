@@ -30,4 +30,7 @@
     <string name="italian">italian</string>
     <string name="popular_dishes">this is image for favorite meal</string>
     <string name="here_you_can_add_your_favourite_recieps">No Favorite Meals yet</string>
+    <string name="text_search">text search</string>
+    <string name="monday">Monday</string>
+    <string name="add_meal">+ Add Meal</string>
 </resources>
