@@ -65,61 +65,67 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
-            android:weightSum="4"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="4">
+
             <ImageView
                 android:id="@+id/icon_calendar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="start"
+                android:layout_weight="1"
                 android:contentDescription="@string/calender_icon"
                 android:src="@drawable/ic_calnder_primary" />
+
             <View
                 android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
             <ImageView
-            android:id="@+id/icon_favorite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="end"
-            android:contentDescription="@string/love_icon"
-            android:src="@drawable/ic_love_icon_white" />
+                android:id="@+id/icon_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:contentDescription="@string/love_icon"
+                android:src="@drawable/ic_love_icon_white" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/text_dish_name"
             style="@style/Yum.Text.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/text_VLarge"
-            android:layout_marginEnd="@dimen/text_VLarge"
             android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/text_VLarge"
             android:text="@string/dish_name"
             android:textColor="@color/black"
             android:textSize="@dimen/text_VLarge" />
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:paddingHorizontal="@dimen/padding_large"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_gravity="center_horizontal"
+            android:paddingHorizontal="@dimen/margin_extra_large">
 
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_flag"
-                app:tint="@color/text_primary"/>
+                app:tint="@color/text_primary" />
 
             <TextView
                 android:id="@+id/text_country"
+                style="@style/Yum.Text.LabelNormal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="@string/italian"
-                style="@style/Yum.Text.LabelNormal"/>
+                android:text="@string/italian" />
 
             <View
                 android:layout_width="8dp"
@@ -130,16 +136,15 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_food"
-               />
+                android:src="@drawable/ic_food" />
 
             <TextView
                 android:id="@+id/text_category"
+                style="@style/Yum.Text.LabelNormal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="Vegetarian"
-                style="@style/Yum.Text.LabelNormal"/>
+                android:text="Vegetarian" />
         </LinearLayout>
 
 
@@ -179,16 +184,17 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginVertical="6dp"
-            android:background="@color/text_hint"/>
+            android:background="@color/text_hint" />
 
         <TextView
             android:id="@+id/text_instructions"
             style="@style/Yum.Text.Body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/instructions_placeholder"
+            android:layout_marginHorizontal="@dimen/padding_extra_large"
             android:lineSpacingExtra="4dp"
-            android:visibility="visible"/>
+            android:text="@string/instructions_placeholder"
+            android:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_ingredients"
@@ -197,18 +203,18 @@
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="3"
-            tools:listitem="@layout/item_ingredient"
-            tools:itemCount="6"/>
+            tools:itemCount="6"
+            tools:listitem="@layout/item_ingredient" />
 
         <WebView
             android:id="@+id/webview_video"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp" />
     </LinearLayout>
 
 
