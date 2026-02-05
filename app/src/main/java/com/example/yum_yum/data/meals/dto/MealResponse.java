@@ -1,4 +1,4 @@
-package com.example.yum_yum.data.model;
+package com.example.yum_yum.data.meals.dto;
 
 import com.google.gson.annotations.SerializedName;
 
