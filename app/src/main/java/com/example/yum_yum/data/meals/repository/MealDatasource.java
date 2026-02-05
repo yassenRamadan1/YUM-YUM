@@ -1,4 +1,4 @@
-package com.example.yum_yum.repository;
+package com.example.yum_yum.data.meals.repository;
 
 import com.example.yum_yum.data.meals.dto.MealResponse;
 

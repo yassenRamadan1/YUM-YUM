@@ -4,6 +4,7 @@ import de.hdodenhof.circleimageview.BuildConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkClient {
@@ -21,6 +22,7 @@ public class NetworkClient {
         retrofit = new Retrofit.Builder()
                 .client(httpClientBuilder.build())
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .baseUrl(baseUrl)
                 .build();
     }

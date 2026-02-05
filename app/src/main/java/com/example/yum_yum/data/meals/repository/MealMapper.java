@@ -1,8 +1,11 @@
-package com.example.yum_yum.presentation.model;
+package com.example.yum_yum.data.meals.repository;
 
 import com.example.yum_yum.data.meals.dto.CategoryDto;
 import com.example.yum_yum.data.meals.dto.CategoryResponse;
 import com.example.yum_yum.data.meals.dto.MealDto;
+import com.example.yum_yum.presentation.model.Category;
+import com.example.yum_yum.presentation.model.IngredientItem;
+import com.example.yum_yum.presentation.model.Meal;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -2,7 +2,7 @@ package com.example.yum_yum.data.meals.datasource.fake;
 
 import com.example.yum_yum.data.meals.dto.MealDto;
 import com.example.yum_yum.data.meals.dto.MealResponse;
-import com.example.yum_yum.repository.MealDatasource;
+import com.example.yum_yum.data.meals.repository.MealDatasource;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
