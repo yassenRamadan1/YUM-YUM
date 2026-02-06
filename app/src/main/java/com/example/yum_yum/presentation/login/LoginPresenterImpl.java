@@ -6,6 +6,7 @@ import android.util.Patterns;
 
 import com.example.yum_yum.data.auth.repository.AuthRepository;
 import com.example.yum_yum.data.user.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -68,7 +69,43 @@ public class LoginPresenterImpl implements LoginContract.Presenter {
                         )
         );
     }
-
+    @Override
+    public void onGoogleSignInClicked() {
+        view.launchGoogleSignIn("WEB_CLIENT_ID_FROM_GOOGLE_SERVICES");
+    }
+    @Override
+    public void onGoogleSignInSuccess(String idToken) {
+        view.showLoading();
+        disposable.add(
+                repository.signInWithGoogle(idToken)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                            repository.getCurrentUser()
+                                    .flatMapCompletable(name -> {
+                                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                                        return userRepository.saveUser(name, email);
+                                    })
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> {
+                                        view.hideLoading();
+                                        view.navigateToHome();
+                                    }, err -> {
+                                        view.hideLoading();
+                                        view.showError("Failed to save user data");
+                                    });
+                        }, error -> {
+                            view.hideLoading();
+                            view.showError(error.getMessage());
+                        })
+        );
+    }
+    @Override
+    public void onGoogleSignInFailure(Exception e) {
+        view.hideLoading();
+        view.showError("Google Sign In Cancelled or Failed");
+    }
     @Override
     public void onDestroy() {
         if (disposable != null && !disposable.isDisposed()) {

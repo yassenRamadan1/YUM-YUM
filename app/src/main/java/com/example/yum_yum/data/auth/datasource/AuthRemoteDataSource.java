@@ -1,7 +1,9 @@
 package com.example.yum_yum.data.auth.datasource;
 
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
@@ -37,6 +39,15 @@ public class AuthRemoteDataSource {
             } else {
                 emitter.onError(new Exception("No user logged in"));
             }
+        });
+    }
+
+    public Completable firebaseAuthWithGoogle(String idToken) {
+        return Completable.create(emitter -> {
+            AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+            firebaseAuth.signInWithCredential(credential)
+                    .addOnSuccessListener(authResult -> emitter.onComplete())
+                    .addOnFailureListener(emitter::onError);
         });
     }
 }

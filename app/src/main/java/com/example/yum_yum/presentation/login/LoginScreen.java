@@ -1,21 +1,22 @@
 package com.example.yum_yum.presentation.login;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.yum_yum.R;
 import com.example.yum_yum.databinding.FragmentLoginBinding;
-import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.snackbar.Snackbar;
 
 
@@ -23,6 +24,7 @@ public class LoginScreen extends Fragment implements LoginContract.View {
 
     private LoginContract.Presenter presenter;
     private FragmentLoginBinding _binding;
+    private CredentialManager credentialManager;
 
     public LoginScreen() {
         // Required empty public constructor
@@ -54,7 +56,14 @@ public class LoginScreen extends Fragment implements LoginContract.View {
         _binding.tvSignUp.setOnClickListener(v ->
                 Navigation.findNavController(view).navigate(R.id.action_loginScreen_to_registerFragment)
         );
+
+        credentialManager = CredentialManager.create(requireContext());
+
+        _binding.loginUsingGoogleButton.setOnClickListener(v -> {
+            presenter.onGoogleSignInClicked();
+        });
     }
+
 
     @Override
     public void showLoading() {
@@ -84,7 +93,48 @@ public class LoginScreen extends Fragment implements LoginContract.View {
     }
 
     @Override
-    public void navigateToHome() {
-        Navigation.findNavController(requireView()).navigate(R.id.action_global_homeScreen);
+    public void showGoogleSignInError(String message) {
+        showError(message);
     }
-}
+
+    @Override
+    public void launchGoogleSignIn(String webClientId) {
+        GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(getString(R.string.default_web_client_id))
+                .setAutoSelectEnabled(true)
+                .build();
+
+        GetCredentialRequest request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build();
+
+        credentialManager.getCredentialAsync(
+                requireContext(),
+                request,
+                null,
+                requireContext().getMainExecutor(),
+                new androidx.credentials.CredentialManagerCallback<GetCredentialResponse, androidx.credentials.exceptions.GetCredentialException>() {
+                    @Override
+                    public void onResult(GetCredentialResponse result) {
+                        if (result.getCredential() instanceof GoogleIdTokenCredential) {
+                            GoogleIdTokenCredential credential = (GoogleIdTokenCredential) result.getCredential();
+                            String idToken = credential.getIdToken();
+                            presenter.onGoogleSignInSuccess(idToken);
+                        } else {
+                            presenter.onGoogleSignInFailure(new Exception("Unexpected credential type"));
+                        }
+                    }
+
+                    @Override
+                    public void onError(androidx.credentials.exceptions.GetCredentialException e) {
+                        presenter.onGoogleSignInFailure(e);
+                    }
+                }
+        );
+    }
+        @Override
+        public void navigateToHome () {
+            Navigation.findNavController(requireView()).navigate(R.id.action_global_homeScreen);
+        }
+    }
