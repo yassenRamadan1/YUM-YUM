@@ -10,11 +10,38 @@ import java.util.Map;
 public class FlagManger {
 
     private static FlagManger instance;
-    private final Map<String, Integer> flagCache = new HashMap<>();
-    private final Map<String, String> isoCodeCache = new HashMap<>();
+    private final Map<String, String> manualAreaCodes = new HashMap<>();
 
     private FlagManger() {
-
+        // Initialize common Food API mismatched names
+        manualAreaCodes.put("American", "us");
+        manualAreaCodes.put("British", "gb");
+        manualAreaCodes.put("Canadian", "ca");
+        manualAreaCodes.put("Chinese", "cn");
+        manualAreaCodes.put("Croatian", "hr");
+        manualAreaCodes.put("Dutch", "nl");
+        manualAreaCodes.put("Egyptian", "eg");
+        manualAreaCodes.put("Filipino", "ph");
+        manualAreaCodes.put("French", "fr");
+        manualAreaCodes.put("Greek", "gr");
+        manualAreaCodes.put("Indian", "in");
+        manualAreaCodes.put("Irish", "ie");
+        manualAreaCodes.put("Italian", "it");
+        manualAreaCodes.put("Jamaican", "jm");
+        manualAreaCodes.put("Japanese", "jp");
+        manualAreaCodes.put("Kenyan", "ke");
+        manualAreaCodes.put("Malaysian", "my");
+        manualAreaCodes.put("Mexican", "mx");
+        manualAreaCodes.put("Moroccan", "ma");
+        manualAreaCodes.put("Polish", "pl");
+        manualAreaCodes.put("Portuguese", "pt");
+        manualAreaCodes.put("Russian", "ru");
+        manualAreaCodes.put("Spanish", "es");
+        manualAreaCodes.put("Thai", "th");
+        manualAreaCodes.put("Tunisian", "tn");
+        manualAreaCodes.put("Turkish", "tr");
+        manualAreaCodes.put("Unknown", "xk"); // Fallback
+        manualAreaCodes.put("Vietnamese", "vn");
     }
 
     public static synchronized FlagManger getInstance() {
@@ -24,43 +51,23 @@ public class FlagManger {
         return instance;
     }
 
-    public int getFlagDrawableId(Context context, String countryName) {
-        if (TextUtils.isEmpty(countryName)) return 0;
+    public String getFlagUrl(String areaName) {
+        if (areaName == null || areaName.isEmpty()) return null;
 
-        if (flagCache.containsKey(countryName)) {
-            return flagCache.get(countryName);
-        }
-
-        String isoCode = getIsoCodeFromName(countryName);
-
-        if (isoCode == null) {
-            return 0;
-        }
-        String resourceName = "flag_" + isoCode.toLowerCase();
-
-        int resourceId = context.getResources().getIdentifier(
-                resourceName,
-                "drawable",
-                context.getPackageName()
-        );
-
-        flagCache.put(countryName, resourceId);
-
-        return resourceId;
+        String isoCode = getIsoCode(areaName);
+        return "https://flagcdn.com/w80/" + isoCode.toLowerCase() + ".png";
     }
 
-    private String getIsoCodeFromName(String countryName) {
-        if (isoCodeCache.containsKey(countryName)) {
-            return isoCodeCache.get(countryName);
+    private String getIsoCode(String areaName) {
+        if (manualAreaCodes.containsKey(areaName)) {
+            return manualAreaCodes.get(areaName);
         }
 
         for (Locale locale : Locale.getAvailableLocales()) {
-            if (countryName.equalsIgnoreCase(locale.getDisplayCountry(Locale.ENGLISH))) {
-                String code = locale.getCountry();
-                isoCodeCache.put(countryName, code);
-                return code;
+            if (areaName.equalsIgnoreCase(locale.getDisplayCountry(Locale.ENGLISH))) {
+                return locale.getCountry().toLowerCase();
             }
         }
-        return null;
+        return "xk";
     }
 }
