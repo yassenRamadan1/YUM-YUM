@@ -38,7 +38,7 @@ public class LoginScreen extends Fragment implements LoginContract.View {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenter = new LoginPresenterImpl(this);
+        presenter = new LoginPresenterImpl(this, this.requireContext().getApplicationContext());
 
         _binding.emptyToolbar.setNavigationOnClickListener(v -> {
             Navigation.findNavController(view).navigateUp();
@@ -85,6 +85,6 @@ public class LoginScreen extends Fragment implements LoginContract.View {
 
     @Override
     public void navigateToHome() {
-        Navigation.findNavController(requireView()).navigate(R.id.action_loginScreen_to_homeScreen);
+        Navigation.findNavController(requireView()).navigate(R.id.action_global_homeScreen);
     }
 }
