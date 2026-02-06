@@ -70,4 +70,6 @@ dependencies {
     implementation libs.core.splashscreen
     implementation platform('com.google.firebase:firebase-bom:34.8.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 }

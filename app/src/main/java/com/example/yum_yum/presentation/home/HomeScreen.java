@@ -86,6 +86,7 @@ public class HomeScreen extends Fragment implements HomeContract.View {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        presenter.onDestroy();
         _binding = null;
     }
 

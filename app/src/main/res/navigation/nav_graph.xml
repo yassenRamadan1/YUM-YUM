@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/welcomeScreen">
+        <action
+            android:id="@+id/action_global_homeScreen"
+            app:destination="@id/homeScreen"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"/>
 
     <fragment
         android:id="@+id/welcomeScreen"
