@@ -8,24 +8,24 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface MealService {
-    @GET("random")
+    @GET("random.php")
     Single<MealResponse> getRandomMeal();
 
-    @GET("search")
+    @GET("search.php")
     Single<MealResponse> searchMealByName(@Query("s") String mealName);
 
-    @GET("lookup")
+    @GET("lookup.php")
     Single<MealResponse> getMealById(@Query("i") String mealId);
 
-    @GET("filter")
+    @GET("filter.php")
     Single<MealResponse> filterByCategory(@Query("c") String category);
 
-    @GET("filter")
+    @GET("filter.php")
     Single<MealResponse> filterByIngredient(@Query("i") String ingredient);
 
-    @GET("filter")
+    @GET("filter.php")
     Single<MealResponse> filterByArea(@Query("a") String area);
 
-    @GET("categories")
+    @GET("categories.php")
     Single<CategoryResponse> getCategories();
 }
