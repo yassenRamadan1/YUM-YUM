@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_color"
     app:layoutDescription="@xml/fragment_food_detail_scene"
     tools:context=".presentation.mealDetails.MealDetailsScreen">
 
@@ -16,6 +16,7 @@
         android:layout_height="0dp"
         android:contentDescription="@string/dish_name"
         android:scaleType="fitXY"
+        android:transitionName="shared_meal_image"
         android:src="@drawable/quick_recipes_image"
         app:layout_constraintBottom_toTopOf="@id/guidline_image"
         app:layout_constraintEnd_toEndOf="parent"
@@ -117,6 +118,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_flag"
+                android:id="@+id/flag_item_icon"
                 app:tint="@color/text_primary" />
 
             <TextView
@@ -206,11 +208,37 @@
             tools:itemCount="6"
             tools:listitem="@layout/item_ingredient" />
 
-        <WebView
-            android:id="@+id/webview_video"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/video_card_container"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:visibility="gone" />
+            android:layout_height="220dp"
+            android:layout_marginHorizontal="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/black">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                    android:id="@+id/youtube_player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enableAutomaticInitialization="false"
+                     />
+
+                <ProgressBar
+                    android:id="@+id/video_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/white" />
+            </FrameLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <Space
             android:layout_width="match_parent"
