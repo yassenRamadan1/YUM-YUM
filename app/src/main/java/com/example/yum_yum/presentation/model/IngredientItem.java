@@ -1,6 +1,16 @@
 package com.example.yum_yum.presentation.model;
 
-public class IngredientItem {
+import java.io.Serializable;
+
+public class IngredientItem implements Serializable {
+    public String getName() {
+        return name;
+    }
+
+    public String getMeasure() {
+        return measure;
+    }
+
     private final String name;
     private final String measure;
 
@@ -10,6 +20,9 @@ public class IngredientItem {
     }
 
     public String getDisplayText() {
-        return measure + " " + name; // e.g., "1/4 cup olive oil"
+        return measure + " " + name;
+    }
+    public String getImageUrl() {
+        return "https://www.themealdb.com/images/ingredients/" + name + ".png";
     }
 }

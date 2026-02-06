@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                if (id == R.id.welcomeScreen || id == R.id.loginScreen || id == R.id.registerFragment) {
+                if (id == R.id.welcomeScreen || id == R.id.loginScreen || id == R.id.registerFragment|| id == R.id.mealDetailsScreen) {
                     bottomNav.setVisibility(View.GONE);
                 } else {
                     bottomNav.setVisibility(View.VISIBLE);

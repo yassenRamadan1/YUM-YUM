@@ -17,7 +17,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp">
+            android:paddingBottom="@dimen/app_bar_height">
 
             <TextView
                 android:id="@+id/textView"
@@ -41,6 +41,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView"
                 app:shapeAppearanceOverlay="@style/CircleImageView"
+                android:src="@drawable/profile_image"
                 tools:srcCompat="@drawable/profile_image" />
 
             <TextView
@@ -65,17 +66,21 @@
                 style="@style/Yum.Text.LabelLarge"/>
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="300dp"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/meal_of_the_day_cardview"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/meal_of_the_day_textview"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
                 android:layout_marginStart="@dimen/margin_large"
+                android:layout_marginTop="@dimen/margin_large"
                 android:layout_marginEnd="@dimen/margin_large"
                 android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_large"
-                app:cardCornerRadius="@dimen/radius_medium">
+                app:cardCornerRadius="@dimen/radius_medium"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/meal_of_the_day_textview">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/card_recipe"
@@ -87,46 +92,64 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/img_description"
-                        android:foreground="@drawable/bg_bottom_linear_transparent"
                         android:scaleType="centerCrop"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0"
                         tools:src="@drawable/quick_recipes_image" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bg_bottom_linear_transparent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/text_recipe_name" />
+
+                    <ImageView
+                        android:id="@+id/flag_item_icon"
+                        style="@style/ItemIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:layout_marginBottom="@dimen/margin_large"
+                        android:contentDescription="@string/img_description"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:src="@drawable/ic_flag" />
+
+                    <TextView
+                        android:id="@+id/country_name_textview"
+                        style="@style/ItemText.Subtitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="@+id/flag_item_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/flag_item_icon"
+                        app:layout_constraintTop_toTopOf="@+id/flag_item_icon"
+                        tools:text="Turkey" />
 
                     <TextView
                         android:id="@+id/text_recipe_name"
                         style="@style/ItemText.Name.Food"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toTopOf="@+id/country_name_textview"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        tools:text="name" />
-
-                    <ImageView
-                        android:id="@+id/flag_item_icon"
-                        style="@style/ItemIcon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/img_description"
-                        android:src="@drawable/ic_flag"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toLeftOf="@id/country_name_textview" />
-
-                    <TextView
-                        android:id="@+id/country_name_textview"
-                        style="@style/ItemText.Subtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="@id/flag_item_icon"
-                        app:layout_constraintLeft_toRightOf="@id/flag_item_icon"
-                        app:layout_constraintTop_toTopOf="@id/flag_item_icon"
-                        tools:text="turkey" />
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/flag_item_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="Delicious Roasted Chicken with Herbs" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
