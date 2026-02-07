@@ -1,5 +1,6 @@
 package com.example.yum_yum.data.network;
 
+import com.example.yum_yum.data.meals.dto.AreaResponse;
 import com.example.yum_yum.data.meals.dto.CategoryResponse;
 import com.example.yum_yum.data.meals.dto.MealResponse;
 
@@ -28,4 +29,6 @@ public interface MealService {
 
     @GET("categories.php")
     Single<CategoryResponse> getCategories();
+    @GET("list.php?a=list")
+    Single<AreaResponse> getAllAreas();
 }
