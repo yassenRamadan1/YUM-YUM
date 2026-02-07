@@ -28,77 +28,99 @@ import java.util.List;
 
 
 public class HomeScreen extends Fragment implements HomeContract.View, OnMealClickListener {
-
+    private FragmentHomeScreenBinding binding;
     private HomeContract.Presenter presenter;
-    private FragmentHomeScreenBinding _binding;
     private CountryMealsAdapter mealsAdapter;
-
-    private FragmentHomeScreenBinding getBinding() {
-        return _binding;
-    }
 
     public HomeScreen() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter = HomePresenterImpl.getInstance(requireContext());
+    }
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        _binding = FragmentHomeScreenBinding.inflate(inflater, container, false);
-        return _binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentHomeScreenBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        presenter = new HomePresenterImpl(this);
+        presenter.attachView(this);
         initRecyclerView();
         presenter.getHomeContent();
     }
-
     private void initRecyclerView() {
         mealsAdapter = new CountryMealsAdapter(requireContext(), this);
-
-        getBinding().recipesOfCountryRecyclerview.setAdapter(mealsAdapter);
+        binding.recipesOfCountryRecyclerview.setAdapter(mealsAdapter);
     }
 
     @Override
     public void showLoading() {
-        if (_binding != null) {
-            _binding.contentScrollView.setVisibility(View.GONE);
-            _binding.loadingIndicatorHome.setVisibility(View.VISIBLE);
+        if (binding != null) {
+            binding.contentScrollView.setVisibility(View.GONE);
+            binding.loadingIndicatorHome.setVisibility(View.VISIBLE);
+        }
+    }
+    @Override
+    public void hideLoading() {
+        if (binding != null) {
+            binding.contentScrollView.setVisibility(View.VISIBLE);
+            binding.loadingIndicatorHome.setVisibility(View.GONE);
         }
     }
 
     @Override
-    public void hideLoading() {
-        _binding.contentScrollView.setVisibility(View.VISIBLE);
-        _binding.loadingIndicatorHome.setVisibility(View.GONE);
-    }
-
-    @Override
     public void showDailyMeal(Meal meal) {
-        loadImage(_binding.imageRecipe, meal.getImageUrl());
-        _binding.textRecipeName.setText(meal.getName());
-        _binding.countryNameTextview.setText(meal.getArea());
+        if (binding == null) return;
+
+        loadImage(binding.imageRecipe, meal.getImageUrl());
+        binding.textRecipeName.setText(meal.getName());
+        binding.countryNameTextview.setText(meal.getArea());
 
         FlagManger flagManger = FlagManger.getInstance();
         String flagUrl = flagManger.getFlagUrl(meal.getArea());
-        loadFlag(_binding.flagItemIcon, flagUrl);
+        loadFlag(binding.flagItemIcon, flagUrl);
 
-        _binding.imageRecipe.setTransitionName("daily_meal_image");
-        _binding.mealOfTheDayCardview.setOnClickListener(v -> {
-            navigateToDetails(meal, _binding.imageRecipe);
+        binding.imageRecipe.setTransitionName("daily_meal_image");
+        binding.mealOfTheDayCardview.setOnClickListener(v -> {
+            navigateToDetails(meal, binding.imageRecipe);
         });
     }
+
+    @Override
+    public void showDailyCountryMeals(List<Meal> meals, String countryName) {
+        if (binding == null) return;
+
+        mealsAdapter.setList(meals);
+        binding.countryOfTheDayNameTextview.setText(countryName);
+
+        FlagManger flagManger = FlagManger.getInstance();
+        String flagUrl = flagManger.getFlagUrl(countryName);
+        loadImage(binding.countryOfTheDayImageview, flagUrl);
+    }
+    @Override
+    public void showError(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
     private void navigateToDetails(Meal meal, ImageView sharedImage) {
         String destinationTransitionName = "shared_meal_image";
         FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
                 .addSharedElement(sharedImage, destinationTransitionName)
                 .build();
+
         Bundle bundle = new Bundle();
         bundle.putSerializable("meal_data", meal);
+
         NavController navController = Navigation.findNavController(requireView());
         navController.navigate(
                 R.id.action_homeScreen_to_mealDetailsScreen,
@@ -108,31 +130,20 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
         );
     }
     @Override
-    public void showDailyCountryMeals(List<Meal> meals, String countryName) {
-        mealsAdapter.setList(meals);
-        getBinding().countryOfTheDayNameTextview.setText(countryName);
-        FlagManger flagManger = FlagManger.getInstance();
-        String flagUrl = flagManger.getFlagUrl(countryName);
-        ImageUtils.loadFlag(getBinding().countryOfTheDayImageview, flagUrl);
+    public void onMealClick(Meal meal, ImageView sharedImageView) {
+        navigateToDetails(meal, sharedImageView);
     }
 
     @Override
-    public void showError(String message) {
-        Toast.makeText(this.getActivity(), message, Toast.LENGTH_SHORT).show();
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.detachView();
+        binding = null;
     }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (presenter != null) {
-            presenter.onDestroy();
-            presenter = null;
-        }
-    }
-
-
-    @Override
-    public void onMealClick(Meal meal, ImageView sharedImageView) {
-        navigateToDetails(meal, sharedImageView);
     }
 }

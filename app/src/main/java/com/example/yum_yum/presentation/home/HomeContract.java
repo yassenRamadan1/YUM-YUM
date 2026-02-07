@@ -14,7 +14,10 @@ public interface HomeContract {
     }
 
     interface Presenter {
+        void attachView(View view);
+        void detachView();
         void getHomeContent();
+        void refreshHomeContent();
         void onDestroy();
     }
 }

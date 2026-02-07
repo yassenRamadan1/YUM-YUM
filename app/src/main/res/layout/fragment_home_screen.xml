@@ -166,8 +166,8 @@
                 style="@style/Yum.Text.LabelLarge"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="16dp"
                 android:id="@+id/country_of_the_day_imageview"
                 app:layout_constraintTop_toBottomOf="@id/country_of_the_day_textview"
                 app:layout_constraintStart_toStartOf="parent"
