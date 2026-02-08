@@ -196,45 +196,37 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
         long todayInMillis = today.getTimeInMillis();
         Calendar endOfWeek = (Calendar) today.clone();
         int currentDayOfWeek = endOfWeek.get(Calendar.DAY_OF_WEEK);
-        if (currentDayOfWeek != Calendar.SUNDAY) {
-            int daysToAdd = (Calendar.SUNDAY + 7 - currentDayOfWeek) % 7;
-            if (daysToAdd == 0) daysToAdd = 7;
-            endOfWeek.add(Calendar.DAY_OF_YEAR, daysToAdd);
-        }
+        int daysUntilFriday = (Calendar.FRIDAY - currentDayOfWeek + 7) % 7;
 
+        if (daysUntilFriday == 0) {
+            daysUntilFriday = 7;
+        }
+        endOfWeek.add(Calendar.DAY_OF_YEAR, daysUntilFriday);
         endOfWeek.set(Calendar.HOUR_OF_DAY, 23);
         endOfWeek.set(Calendar.MINUTE, 59);
         endOfWeek.set(Calendar.SECOND, 59);
         long endOfWeekInMillis = endOfWeek.getTimeInMillis();
 
         Log.d(TAG, "Today: " + formatDate(todayInMillis));
-        Log.d(TAG, "End of week: " + formatDate(endOfWeekInMillis));
-
+        Log.d(TAG, "End of cycle (Friday): " + formatDate(endOfWeekInMillis));
         CalendarConstraints.DateValidator validatorForward =
                 DateValidatorPointForward.from(todayInMillis);
-
         CalendarConstraints.DateValidator validatorBackward =
-                DateValidatorPointBackward.before(endOfWeekInMillis + 86400000);
-
+                DateValidatorPointBackward.before(endOfWeekInMillis);
         CalendarConstraints.DateValidator compositeValidator =
                 CompositeDateValidator.allOf(
                         Arrays.asList(validatorForward, validatorBackward)
                 );
-        Calendar monthStart = (Calendar) today.clone();
-        monthStart.set(Calendar.DAY_OF_MONTH, 1);
-        long monthStartInMillis = monthStart.getTimeInMillis();
-        Calendar monthEnd = (Calendar) endOfWeek.clone();
-        monthEnd.set(Calendar.DAY_OF_MONTH, monthEnd.getActualMaximum(Calendar.DAY_OF_MONTH));
-        long monthEndInMillis = monthEnd.getTimeInMillis();
+
         CalendarConstraints constraints = new CalendarConstraints.Builder()
-                .setStart(monthStartInMillis)
-                .setEnd(monthEndInMillis)
+                .setStart(todayInMillis)
+                .setEnd(endOfWeekInMillis)
                 .setOpenAt(todayInMillis)
                 .setValidator(compositeValidator)
                 .build();
 
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select a date for your meal")
+                .setTitleText("Select a date (Sat - Fri)")
                 .setSelection(todayInMillis)
                 .setCalendarConstraints(constraints)
                 .build();
