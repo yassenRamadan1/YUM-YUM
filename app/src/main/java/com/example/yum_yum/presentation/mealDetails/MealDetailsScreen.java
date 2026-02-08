@@ -2,6 +2,7 @@ package com.example.yum_yum.presentation.mealDetails;
 
 import static com.example.yum_yum.presentation.utils.ImageUtils.loadFlag;
 
+import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -28,11 +30,21 @@ import com.example.yum_yum.presentation.model.IngredientItem;
 import com.example.yum_yum.presentation.model.Meal;
 import com.example.yum_yum.presentation.utils.FlagManger;
 import com.example.yum_yum.presentation.utils.YouTubeUtils;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MealDetailsScreen extends Fragment implements MealDetailsContract.View {
@@ -42,6 +54,7 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
     private MealDetailsContract.Presenter presenter;
     private String pendingVideoId = null;
     private boolean isPlayerInitialized = false;
+    private Meal currentMeal;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,17 +74,31 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        presenter = new MealDetailsPresenter(this);
+        presenter = new MealDetailsPresenter(this, requireContext());
         postponeEnterTransition();
 
         if (getArguments() != null) {
-            Meal meal = (Meal) getArguments().getSerializable("meal_data");
-            presenter.loadMealDetails(meal);
+            currentMeal = (Meal) getArguments().getSerializable("meal_data");
+            presenter.loadMealDetails(currentMeal);
         }
 
         binding.toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).navigateUp());
 
         setupChipBehavior();
+        setupClickListeners();
+    }
+
+    private void setupClickListeners() {
+        binding.iconFavorite.setOnClickListener(v -> {
+            if (currentMeal != null) {
+                presenter.onFavoriteClicked(currentMeal);
+            }
+        });
+        binding.iconCalendar.setOnClickListener(v -> {
+            if (currentMeal != null) {
+                presenter.onCalendarClicked(currentMeal);
+            }
+        });
     }
 
     private void setupChipBehavior() {
@@ -124,7 +151,6 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
     @Override
     public void showIngredientsList(List<IngredientItem> ingredients) {
         if (binding == null) return;
-
         IngredientsAdapter adapter = new IngredientsAdapter(ingredients);
         binding.recyclerIngredients.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         binding.recyclerIngredients.setAdapter(adapter);
@@ -136,37 +162,122 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
             return;
         }
         String videoId = YouTubeUtils.extractVideoId(videoUrl);
-        Log.d(TAG, "Video URL: " + videoUrl);
-        Log.d(TAG, "Extracted Video ID: " + videoId);
         if (videoId != null && !videoId.isEmpty()) {
             pendingVideoId = videoId;
         } else {
-            Log.w(TAG, "Could not extract video ID from URL: " + videoUrl);
             binding.videoCardContainer.setVisibility(View.GONE);
         }
     }
 
+    @Override
+    public void showLoginRequired(String feature) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Login Required")
+                .setMessage("You must be logged in to add meals to " + feature + ".")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    @Override
+    public void updateFavoriteIcon(boolean isFavorite) {
+        if (binding == null) return;
+        binding.iconFavorite.setImageResource(
+                isFavorite ? R.drawable.ic_love_icon : R.drawable.ic_love_icon_white
+        );
+    }
+
+    @Override
+    public void showCalendarPicker(Meal meal) {
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        long todayInMillis = today.getTimeInMillis();
+        Calendar endOfWeek = (Calendar) today.clone();
+        int currentDayOfWeek = endOfWeek.get(Calendar.DAY_OF_WEEK);
+        if (currentDayOfWeek != Calendar.SUNDAY) {
+            int daysToAdd = (Calendar.SUNDAY + 7 - currentDayOfWeek) % 7;
+            if (daysToAdd == 0) daysToAdd = 7;
+            endOfWeek.add(Calendar.DAY_OF_YEAR, daysToAdd);
+        }
+
+        endOfWeek.set(Calendar.HOUR_OF_DAY, 23);
+        endOfWeek.set(Calendar.MINUTE, 59);
+        endOfWeek.set(Calendar.SECOND, 59);
+        long endOfWeekInMillis = endOfWeek.getTimeInMillis();
+
+        Log.d(TAG, "Today: " + formatDate(todayInMillis));
+        Log.d(TAG, "End of week: " + formatDate(endOfWeekInMillis));
+
+        CalendarConstraints.DateValidator validatorForward =
+                DateValidatorPointForward.from(todayInMillis);
+
+        CalendarConstraints.DateValidator validatorBackward =
+                DateValidatorPointBackward.before(endOfWeekInMillis + 86400000);
+
+        CalendarConstraints.DateValidator compositeValidator =
+                CompositeDateValidator.allOf(
+                        Arrays.asList(validatorForward, validatorBackward)
+                );
+        Calendar monthStart = (Calendar) today.clone();
+        monthStart.set(Calendar.DAY_OF_MONTH, 1);
+        long monthStartInMillis = monthStart.getTimeInMillis();
+        Calendar monthEnd = (Calendar) endOfWeek.clone();
+        monthEnd.set(Calendar.DAY_OF_MONTH, monthEnd.getActualMaximum(Calendar.DAY_OF_MONTH));
+        long monthEndInMillis = monthEnd.getTimeInMillis();
+        CalendarConstraints constraints = new CalendarConstraints.Builder()
+                .setStart(monthStartInMillis)
+                .setEnd(monthEndInMillis)
+                .setOpenAt(todayInMillis)
+                .setValidator(compositeValidator)
+                .build();
+
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select a date for your meal")
+                .setSelection(todayInMillis)
+                .setCalendarConstraints(constraints)
+                .build();
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            String selectedDate = formatDate(selection);
+            Log.d(TAG, "Selected date: " + selectedDate);
+            presenter.onDateSelected(meal, selectedDate);
+        });
+
+        datePicker.show(getParentFragmentManager(), "DATE_PICKER");
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showError(String error) {
+        Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+    }
+
+    private String formatDate(long millis) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(new Date(millis));
+    }
+
     private void initializeYouTubePlayer(String videoId) {
         if (isPlayerInitialized || binding == null) {
-            Log.d(TAG, "Player already initialized or binding is null");
             return;
         }
         getLifecycle().addObserver(binding.youtubePlayerView);
         binding.youtubePlayerView.initialize(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                Log.d(TAG, "YouTube Player is ready!");
                 isPlayerInitialized = true;
                 binding.videoProgressBar.setVisibility(View.GONE);
                 youTubePlayer.cueVideo(videoId, 0);
-                Log.d(TAG, "Video cued: " + videoId);
             }
 
             @Override
             public void onStateChange(@NonNull YouTubePlayer youTubePlayer,
                                       @NonNull PlayerConstants.PlayerState state) {
-                Log.d(TAG, "Player state: " + state);
-
                 if (state == PlayerConstants.PlayerState.PLAYING ||
                         state == PlayerConstants.PlayerState.PAUSED ||
                         state == PlayerConstants.PlayerState.VIDEO_CUED) {
@@ -185,6 +296,9 @@ public class MealDetailsScreen extends Fragment implements MealDetailsContract.V
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (presenter != null) {
+            presenter.onDestroy();
+        }
         isPlayerInitialized = false;
         pendingVideoId = null;
         if (binding != null && binding.youtubePlayerView != null) {
