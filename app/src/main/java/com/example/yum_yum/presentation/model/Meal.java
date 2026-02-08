@@ -12,7 +12,33 @@ public class Meal implements Serializable {
     private final String area;
     private final String youtubeUrl;
     private final List<IngredientItem> ingredients;
+    private String plannedDate;
 
+    public Meal(String id, String name, String imageUrl, String instructions, String category,
+                String area, String youtubeUrl, List<IngredientItem> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.instructions = instructions;
+        this.category = category;
+        this.area = area;
+        this.youtubeUrl = youtubeUrl;
+        this.ingredients = ingredients;
+        this.plannedDate = null;
+    }
+
+    public Meal(String id, String name, String imageUrl, String instructions, String category,
+                String area, String youtubeUrl, List<IngredientItem> ingredients, String plannedDate) {
+        this.id = id;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.instructions = instructions;
+        this.category = category;
+        this.area = area;
+        this.youtubeUrl = youtubeUrl;
+        this.ingredients = ingredients;
+        this.plannedDate = plannedDate;
+    }
 
     public String getId() {
         return id;
@@ -42,19 +68,16 @@ public class Meal implements Serializable {
         return youtubeUrl;
     }
 
-
-    public Meal(String id, String name, String imageUrl, String instructions, String category, String area, String youtubeUrl, List<IngredientItem> ingredients) {
-        this.id = id;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.instructions = instructions;
-        this.category = category;
-        this.area = area;
-        this.youtubeUrl = youtubeUrl;
-        this.ingredients = ingredients;
+    public List<IngredientItem> getIngredients() {
+        return ingredients;
     }
 
-    public List<IngredientItem> getIngredients() { return ingredients; }
+    public String getPlannedDate() {
+        return plannedDate;
+    }
 
+    public void setPlannedDate(String plannedDate) {
+        this.plannedDate = plannedDate;
+    }
 }
 
