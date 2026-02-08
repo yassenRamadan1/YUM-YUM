@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class MealMapper {
     private static final Gson gson = new Gson();
 
-    // ===== DTO TO UI MODEL =====
     public static Meal mapToUiModel(MealDto dto) {
         List<IngredientItem> ingredientsList = new ArrayList<>();
 
@@ -47,7 +46,6 @@ public class MealMapper {
         );
     }
 
-    // ===== ENTITY TO UI MODEL =====
     public static Meal convertEntityToMeal(MealEntity entity) {
         if (entity == null) return null;
 
@@ -69,7 +67,6 @@ public class MealMapper {
         );
     }
 
-    // ===== UI MODEL TO ENTITY =====
     public static MealEntity convertToEntity(Meal meal) {
         MealEntity entity = new MealEntity();
         entity.setId(meal.getId());
@@ -97,8 +94,7 @@ public class MealMapper {
         return entity;
     }
 
-    // ===== CATEGORY MAPPING =====
-    public Category mapToModel(CategoryDto dto) {
+    public static Category mapToModel(CategoryDto dto) {
         if (dto == null) {
             return null;
         }
@@ -111,12 +107,12 @@ public class MealMapper {
         );
     }
 
-    public List<Category> mapToModelList(CategoryResponse responseDto) {
+    public static List<Category> mapToModelList(CategoryResponse responseDto) {
         if (responseDto == null || responseDto.getCategories() == null) {
             return Collections.emptyList();
         }
         return responseDto.getCategories().stream()
-                .map(this::mapToModel)
+                .map(MealMapper::mapToModel)
                 .collect(Collectors.toList());
     }
 
@@ -151,4 +147,16 @@ public class MealMapper {
 
         return ingredientItems;
     }
+    public static Category toCategoryModel(CategoryDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        return new Category(
+                dto.getIdCategory(),
+                dto.getStrCategory(),
+                dto.getStrCategoryThumb(),
+                dto.getStrCategoryDescription()
+        );
+    }
+
 }
