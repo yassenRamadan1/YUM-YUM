@@ -37,4 +37,6 @@
     <string name="add_meals_from_the_details_screen">Add meals from the details screen</string>
     <string name="login_required">Login Required</string>
     <string name="you_must_login_to_view_your_weekly_meal_plan">You must login to view your weekly meal plan</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
 </resources>
