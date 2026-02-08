@@ -1,9 +1,11 @@
 package com.example.yum_yum.data.meals.repository;
 
+import static android.content.ContentValues.TAG;
 import static com.example.yum_yum.data.meals.repository.MealMapper.convertToEntity;
 import static com.example.yum_yum.data.meals.repository.MealMapper.mapToUiModel;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.yum_yum.data.meals.datasource.local.DailyCachePreferences;
 import com.example.yum_yum.data.meals.datasource.local.MealLocalDataSource;
@@ -11,14 +13,21 @@ import com.example.yum_yum.data.meals.datasource.local.entity.MealEntity;
 import com.example.yum_yum.data.meals.datasource.network.MealFirestoreDataSource;
 import com.example.yum_yum.data.meals.datasource.network.MealsNetworkDataSource;
 import com.example.yum_yum.data.meals.dto.AreaResponse;
+import com.example.yum_yum.data.meals.dto.CategoryDto;
 import com.example.yum_yum.data.meals.dto.CountryMealsData;
 import com.example.yum_yum.data.meals.dto.HomeContentData;
+import com.example.yum_yum.data.meals.dto.IngredientResponse;
 import com.example.yum_yum.data.meals.dto.MealDto;
+import com.example.yum_yum.data.meals.dto.MealResponse;
+import com.example.yum_yum.presentation.model.Category;
+import com.example.yum_yum.presentation.model.IngredientItem;
 import com.example.yum_yum.presentation.model.Meal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Completable;
@@ -30,6 +39,10 @@ public class MealsRepository {
     private final DailyCachePreferences cachePreferences;
     private final MealLocalDataSource localDataSource;
     private final MealFirestoreDataSource firestoreDataSource;
+    private List<Meal> allMealsCache = null;
+    private List<Category> allCategoriesCache = null;
+    private List<String> allAreasCache = null;
+    private List<String> allIngredientsCache = null;
 
     public MealsRepository(Context context) {
         this.networkDataSource = new MealsNetworkDataSource();
@@ -128,7 +141,190 @@ public class MealsRepository {
     public Single<HomeContentData> refreshHomeContent() {
         return fetchAndCacheFreshHomeContent();
     }
+    public Single<List<Meal>> getAllMeals() {
+        if (allMealsCache != null) {
+            Log.d(TAG, "Returning cached meals: " + allMealsCache.size());
+            return Single.just(allMealsCache);
+        }
 
+        Log.d(TAG, "Fetching all meals from network...");
+
+        return networkDataSource.getAllCategories()
+                .flatMap(categoryResponse -> {
+                    List<CategoryDto> categories = categoryResponse.getCategories();
+                    if (categories == null || categories.isEmpty()) {
+                        return Single.error(new Exception("No categories available"));
+                    }
+                    List<Single<MealResponse>> categoryRequests = new ArrayList<>();
+                    for (CategoryDto category : categories) {
+                        categoryRequests.add(
+                                networkDataSource.getMealsByCategory(category.getStrCategory())
+                                        .onErrorReturnItem(new MealResponse())
+                        );
+                    }
+                    return Single.zip(categoryRequests, objects -> {
+                        Set<String> uniqueMealIds = new HashSet<>();
+                        for (Object obj : objects) {
+                            MealResponse response = (MealResponse) obj;
+                            if (response.getMeals() != null) {
+                                for (MealDto dto : response.getMeals()) {
+                                    uniqueMealIds.add(dto.getId());
+                                }
+                            }
+                        }
+                        Log.d(TAG, "Found " + uniqueMealIds.size() + " unique meal IDs");
+                        return new ArrayList<>(uniqueMealIds);
+                    });
+                })
+                .flatMap(uniqueMealIds -> {
+                    List<Single<Meal>> mealDetailRequests = new ArrayList<>();
+                    for (String mealId : uniqueMealIds) {
+                        mealDetailRequests.add(
+                                networkDataSource.getMealById(mealId)
+                                        .map(response -> mapToUiModel(response.getMeals().get(0)))
+                                        .onErrorReturnItem(null)
+                        );
+                    }
+                    return Single.zip(mealDetailRequests, objects -> {
+                        List<Meal> allMeals = new ArrayList<>();
+                        for (Object obj : objects) {
+                            if (obj != null) {
+                                allMeals.add((Meal) obj);
+                            }
+                        }
+                        Log.d(TAG, "Fetched total meals: " + allMeals.size());
+                        return allMeals;
+                    });
+                })
+                .doOnSuccess(meals -> {
+                    allMealsCache = meals;
+                    Log.d(TAG, "Cached " + meals.size() + " meals");
+                });
+    }
+    public Single<List<Category>> getAllCategories(boolean forceRefresh) {
+        if ( allCategoriesCache != null) {
+            return Single.just(allCategoriesCache);
+        }
+
+        return networkDataSource.getAllCategories()
+                .map(MealMapper::mapToModelList)
+                .doOnSuccess(categories -> {
+                    allCategoriesCache = categories;
+                    Log.d(TAG, "Cached " + categories.size() + " categories");
+                });
+    }
+    public Single<List<String>> getAllAreas(boolean forceRefresh) {
+        if (allAreasCache != null) {
+            return Single.just(allAreasCache);
+        }
+
+        return networkDataSource.getAllAreas()
+                .map(areaResponse -> {
+                    List<String> areas = new ArrayList<>();
+                    if (areaResponse.getAreas() != null) {
+                        for (AreaResponse.AreaDto areaDto : areaResponse.getAreas()) {
+                            areas.add(areaDto.getArea());
+                        }
+                    }
+                    return areas;
+                })
+                .doOnSuccess(areas -> {
+                    allAreasCache = areas;
+                    Log.d(TAG, "Cached " + areas.size() + " areas");
+                });
+    }
+    public Single<List<String>> getAllIngredients() {
+        if ( allIngredientsCache != null) {
+            return Single.just(allIngredientsCache);
+        }
+
+        return networkDataSource.getAllIngredients()
+                .map(ingredientResponse -> {
+                    List<String> ingredients = new ArrayList<>();
+                    if (ingredientResponse.getMeals() != null) {
+                        for (IngredientResponse.Ingredient ingredient : ingredientResponse.getMeals()) {
+                            if (ingredient.getName() != null && !ingredient.getName().isEmpty()) {
+                                ingredients.add(ingredient.getName());
+                            }
+                        }
+                    }
+                    return ingredients;
+                })
+                .doOnSuccess(ingredients -> {
+                    allIngredientsCache = ingredients;
+                    Log.d(TAG, "Cached " + ingredients.size() + " ingredients");
+                });
+    }
+    public Single<List<Meal>> searchMeals(
+            String query,
+            List<String> selectedCategories,
+            List<String> selectedAreas,
+            List<String> selectedIngredients
+    ) {
+        return getAllMeals()
+                .map(allMeals -> {
+                    List<Meal> filteredMeals = new ArrayList<>(allMeals);
+                    if (query != null && !query.trim().isEmpty()) {
+                        String lowerQuery = query.toLowerCase().trim();
+                        filteredMeals = filteredMeals.stream()
+                                .filter(meal -> meal.getName().toLowerCase().contains(lowerQuery))
+                                .collect(Collectors.toList());
+                    }
+                    if (selectedCategories != null && !selectedCategories.isEmpty()) {
+                        filteredMeals = filteredMeals.stream()
+                                .filter(meal -> selectedCategories.contains(meal.getCategory()))
+                                .collect(Collectors.toList());
+                    }
+                    if (selectedAreas != null && !selectedAreas.isEmpty()) {
+                        filteredMeals = filteredMeals.stream()
+                                .filter(meal -> selectedAreas.contains(meal.getArea()))
+                                .collect(Collectors.toList());
+                    }
+                    if (selectedIngredients != null && !selectedIngredients.isEmpty()) {
+                        filteredMeals = filteredMeals.stream()
+                                .filter(meal -> {
+                                    List<String> mealIngredientNames = meal.getIngredients().stream()
+                                            .map(IngredientItem::getName)
+                                            .map(String::toLowerCase)
+                                            .collect(Collectors.toList());
+                                    for (String selectedIngredient : selectedIngredients) {
+                                        boolean found = false;
+                                        for (String mealIngredient : mealIngredientNames) {
+                                            if (mealIngredient.contains(selectedIngredient.toLowerCase())) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                })
+                                .collect(Collectors.toList());
+                    }
+                    Log.d(TAG, "Search results: " + filteredMeals.size() + " meals");
+                    return filteredMeals;
+                });
+    }
+    public Single<List<Meal>> searchMealsByName(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return Single.just(new ArrayList<>());
+        }
+        return networkDataSource.searchMealByName(query)
+                .map(mealResponse -> {
+                    if (mealResponse.getMeals() == null) {
+                        return new ArrayList<Meal>();
+                    }
+                    return mealResponse.getMeals().stream()
+                            .map(MealMapper::mapToUiModel)
+                            .collect(Collectors.toList());
+                })
+                .onErrorResumeNext(error -> {
+                    Log.w(TAG, "API search failed, using local filtering", error);
+                    return searchMeals(query, null, null, null);
+                });
+    }
     public void clearCache() {
         cachePreferences.clearCache();
     }

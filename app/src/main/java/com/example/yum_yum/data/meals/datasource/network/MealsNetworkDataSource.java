@@ -1,6 +1,8 @@
 package com.example.yum_yum.data.meals.datasource.network;
 
 import com.example.yum_yum.data.meals.dto.AreaResponse;
+import com.example.yum_yum.data.meals.dto.CategoryResponse;
+import com.example.yum_yum.data.meals.dto.IngredientResponse;
 import com.example.yum_yum.data.meals.dto.MealResponse;
 import com.example.yum_yum.data.network.MealService;
 import com.example.yum_yum.data.network.NetworkClient;
@@ -24,5 +26,20 @@ public class MealsNetworkDataSource {
 
     public Single<MealResponse> getMealById(String mealId) {
         return mealService.getMealById(mealId);
+    }
+    public Single<CategoryResponse> getAllCategories() {
+        return mealService.getCategories();
+    }
+
+    public Single<IngredientResponse> getAllIngredients() {
+        return mealService.getAllIngredients();
+    }
+
+    public Single<MealResponse> getMealsByCategory(String category) {
+        return mealService.filterByCategory(category);
+    }
+
+    public Single<MealResponse> searchMealByName(String mealName) {
+        return mealService.searchMealByName(mealName);
     }
 }
