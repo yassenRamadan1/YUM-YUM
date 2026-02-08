@@ -43,7 +43,6 @@ public interface MealDao {
     @Query("UPDATE meals SET is_synced = 1 WHERE id IN (:mealIds) AND user_id = :userId AND is_favorite = 1")
     Completable markFavoritesAsSynced(String userId, List<String> mealIds);
 
-    // Weekly plan queries
     @Query("SELECT * FROM meals WHERE user_id = :userId AND planned_date BETWEEN :startDate AND :endDate ORDER BY planned_date ASC")
     Flowable<List<MealEntity>> getPlannedMealsForWeek(String userId, String startDate, String endDate);
 
