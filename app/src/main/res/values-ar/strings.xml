@@ -31,4 +31,10 @@
     <string name="monday">Monday</string>
     <string name="add_meal">+ Add Meal</string>
     <string name="find_your_favorite_meals">Find Your Favorite Meals</string>
+    <string name="select_a_day">Select a day</string>
+    <string name="weekly_meal_plan">Weekly Meal Plan</string>
+    <string name="no_meals_planned_for_this_week">No meals planned for this week</string>
+    <string name="add_meals_from_the_details_screen">Add meals from the details screen</string>
+    <string name="login_required">Login Required</string>
+    <string name="you_must_login_to_view_your_weekly_meal_plan">You must login to view your weekly meal plan</string>
 </resources>

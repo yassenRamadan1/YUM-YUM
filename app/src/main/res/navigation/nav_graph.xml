@@ -82,5 +82,8 @@
         <argument
             android:name="meal_data"
             app:argType="com.example.yum_yum.presentation.model.Meal" />
+        <action
+            android:id="@+id/action_mealDetailsScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
     </fragment>
 </navigation>
