@@ -39,4 +39,6 @@
     <string name="you_must_login_to_view_your_weekly_meal_plan">You must login to view your weekly meal plan</string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    <string name="you_must_login_to_view_your_favorite_recipes">you must login to view your favorite recipes</string>
+    <string name="no_favorite_recipes">No Favorite Recipes Yet</string>
 </resources>
