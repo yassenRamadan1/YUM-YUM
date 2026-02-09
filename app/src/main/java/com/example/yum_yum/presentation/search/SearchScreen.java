@@ -26,14 +26,13 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-
-
 public class SearchScreen extends Fragment implements SearchContract.View, FilterBottomSheetFragment.FilterListener {
 
     private FragmentSearchScreenBinding binding;
     private SearchContract.Presenter presenter;
     private SearchResultsAdapter adapter;
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private final PublishSubject<String> searchSubject = PublishSubject.create();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,23 +50,20 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         setupRecyclerView();
         setupSearchInput();
         setupFilterIcon();
+        showInitialEmptyState();
         presenter.onViewCreated();
     }
 
     private void setupRecyclerView() {
         adapter = new SearchResultsAdapter(meal -> presenter.onMealClicked(meal));
-
         GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 2);
         binding.recyclerSearchResult.setLayoutManager(layoutManager);
         binding.recyclerSearchResult.setAdapter(adapter);
         binding.recyclerSearchResult.setHasFixedSize(true);
     }
-
-    private final PublishSubject<String> searchSubject = PublishSubject.create();
 
     private void setupSearchInput() {
         Disposable searchDisposable = searchSubject
@@ -108,11 +104,21 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     }
 
 
+    private void showInitialEmptyState() {
+        if (binding != null) {
+            binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
+            binding.tvEmptyState.setVisibility(View.VISIBLE);
+            binding.tvEmptyState.setText("Type any meal name to search");
+        }
+    }
+
+
     @Override
     public void showLoading() {
         if (binding != null) {
             binding.loadingIndicatorSearch.setVisibility(View.VISIBLE);
             binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
+            binding.tvEmptyState.setVisibility(View.GONE);
         }
     }
 
@@ -128,22 +134,9 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
         if (binding != null) {
             binding.loadingIndicatorSearch.setVisibility(View.GONE);
             binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
+            binding.tvEmptyState.setVisibility(View.VISIBLE);
+            binding.tvEmptyState.setText("No internet connection");
 
-            Toast.makeText(
-                    requireContext(),
-                    "No internet connection. Please check your network and try again.",
-                    Toast.LENGTH_LONG
-            ).show();
-
-            showEmptyState("No Internet Connection", "Please check your network and try again");
-        }
-    }
-
-    @Override
-    public void showAllMeals(List<Meal> meals) {
-        if (binding != null) {
-            binding.recyclerSearchResult.setVisibility(View.VISIBLE);
-            adapter.setMeals(meals);
         }
     }
 
@@ -151,6 +144,7 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void showSearchResults(List<Meal> meals) {
         if (binding != null) {
             binding.recyclerSearchResult.setVisibility(View.VISIBLE);
+            binding.tvEmptyState.setVisibility(View.GONE);
             adapter.setMeals(meals);
         }
     }
@@ -159,13 +153,9 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void showEmptyResults() {
         if (binding != null) {
             binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
+            binding.tvEmptyState.setVisibility(View.VISIBLE);
+            binding.tvEmptyState.setText("No meals found");
             adapter.clearMeals();
-
-            Toast.makeText(
-                    requireContext(),
-                    "No meals found. Try different search terms or filters.",
-                    Toast.LENGTH_SHORT
-            ).show();
         }
     }
 
@@ -202,6 +192,7 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void clearSearchQuery() {
         if (binding != null) {
             binding.etSearchQuery.setText("");
+            showInitialEmptyState();
         }
     }
 
@@ -215,18 +206,13 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void onFiltersReset() {
         presenter.onFiltersReset();
     }
-    private void showEmptyState(String title, String message) {
-
-        Toast.makeText(requireContext(), title + ": " + message, Toast.LENGTH_LONG).show();
-    }
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        disposables.clear();
         searchSubject.onComplete();
+        disposables.clear();
         presenter.onDestroy();
         binding = null;
     }

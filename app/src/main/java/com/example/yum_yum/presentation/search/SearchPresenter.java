@@ -5,17 +5,19 @@ import android.util.Log;
 
 import com.example.yum_yum.data.meals.repository.MealsRepository;
 import com.example.yum_yum.presentation.model.Category;
+import com.example.yum_yum.presentation.model.IngredientItem;
 import com.example.yum_yum.presentation.model.Meal;
 import com.example.yum_yum.presentation.utils.NetworkUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-
 
 public class SearchPresenter implements SearchContract.Presenter {
     private static final String TAG = "SearchPresenter";
@@ -25,13 +27,10 @@ public class SearchPresenter implements SearchContract.Presenter {
     private final NetworkUtil networkUtil;
     private final CompositeDisposable disposables;
 
-    private List<Meal> allMeals = new ArrayList<>();
-    private List<Meal> currentDisplayedMeals = new ArrayList<>();
     private List<Category> allCategories = new ArrayList<>();
     private List<String> allAreas = new ArrayList<>();
     private List<String> allIngredients = new ArrayList<>();
-
-    private String currentSearchQuery = "";
+    private List<Meal> currentSearchResults = new ArrayList<>();
     private List<String> selectedCategories = new ArrayList<>();
     private List<String> selectedAreas = new ArrayList<>();
     private List<String> selectedIngredients = new ArrayList<>();
@@ -45,7 +44,11 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void onViewCreated() {
-        checkInternetAndLoadData();
+        if (!networkUtil.isNetworkAvailable()) {
+            view.showNoInternetError();
+            return;
+        }
+        loadFilterOptions();
     }
 
     @Override
@@ -54,23 +57,17 @@ public class SearchPresenter implements SearchContract.Presenter {
             view.showNoInternetError();
             return;
         }
-
-        loadAllData();
+        loadFilterOptions();
     }
 
-
-    private void loadAllData() {
-        view.showLoading();
-
+    private void loadFilterOptions() {
         disposables.add(
                 Single.zip(
-                                repository.getAllMeals(),
                                 repository.getAllCategories(),
                                 repository.getAllAreas(),
                                 repository.getAllIngredients(),
-                                (meals, categories, areas, ingredients) -> {
-                                    SearchData data = new SearchData();
-                                    data.meals = meals;
+                                (categories, areas, ingredients) -> {
+                                    FilterOptionsData data = new FilterOptionsData();
                                     data.categories = categories;
                                     data.areas = areas;
                                     data.ingredients = ingredients;
@@ -80,52 +77,72 @@ public class SearchPresenter implements SearchContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                this::onDataLoaded,
-                                this::onDataLoadError
+                                data -> {
+                                    this.allCategories = data.categories;
+                                    this.allAreas = data.areas;
+                                    this.allIngredients = data.ingredients;
+                                    Log.d(TAG, "Filter options loaded: " + allCategories.size()
+                                            + " categories, " + allAreas.size() + " areas, "
+                                            + allIngredients.size() + " ingredients");
+                                },
+                                error -> {
+                                    Log.e(TAG, "Error loading filter options", error);
+                                }
                         )
         );
     }
 
-    private void onDataLoaded(SearchData data) {
-        view.hideLoading();
-
-        this.allMeals = data.meals;
-        this.allCategories = data.categories;
-        this.allAreas = data.areas;
-        this.allIngredients = data.ingredients;
-        this.currentDisplayedMeals = new ArrayList<>(allMeals);
-
-        view.showAllMeals(allMeals);
-
-        Log.d(TAG, "Data loaded successfully: " + allMeals.size() + " meals, "
-                + allCategories.size() + " categories, "
-                + allAreas.size() + " areas, "
-                + allIngredients.size() + " ingredients");
-    }
-
-    private void onDataLoadError(Throwable error) {
-        view.hideLoading();
-        Log.e(TAG, "Error loading data", error);
-
-        if (!networkUtil.isNetworkAvailable()) {
-            view.showNoInternetError();
-        } else {
-            view.showError("Failed to load meals: " + error.getMessage());
-        }
-    }
-
     @Override
     public void onSearchQueryChanged(String query) {
-        currentSearchQuery = query != null ? query.trim() : "";
-        applySearchAndFilters();
+        // Clear results if query is empty
+        if (query == null || query.trim().isEmpty()) {
+            currentSearchResults.clear();
+            view.showEmptyResults();
+            return;
+        }
+
+        // Check internet
+        if (!networkUtil.isNetworkAvailable()) {
+            view.showNoInternetError();
+            return;
+        }
+        searchMealsByName(query.trim());
+    }
+    private void searchMealsByName(String query) {
+        view.showLoading();
+
+        disposables.add(
+                repository.searchMealsByName(query)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                meals -> {
+                                    view.hideLoading();
+                                    currentSearchResults = meals;
+                                    applyFiltersToResults();
+                                },
+                                error -> {
+                                    view.hideLoading();
+                                    Log.e(TAG, "Search error", error);
+
+                                    if (!networkUtil.isNetworkAvailable()) {
+                                        view.showNoInternetError();
+                                    } else {
+                                        view.showError("Search failed: " + error.getMessage());
+                                        view.showEmptyResults();
+                                    }
+                                }
+                        )
+        );
     }
 
     @Override
     public void onFilterIconClicked() {
         if (allCategories.isEmpty() || allAreas.isEmpty() || allIngredients.isEmpty()) {
-            view.showError("Filter options not loaded yet");
+            view.showError("Filter options are loading, please try again");
             return;
         }
+
         view.showFilterDialog(allCategories, allAreas, allIngredients);
     }
 
@@ -143,7 +160,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                 + ", Areas: " + this.selectedAreas.size()
                 + ", Ingredients: " + this.selectedIngredients.size());
 
-        applySearchAndFilters();
+        applyFiltersToResults();
     }
 
     @Override
@@ -151,43 +168,66 @@ public class SearchPresenter implements SearchContract.Presenter {
         selectedCategories.clear();
         selectedAreas.clear();
         selectedIngredients.clear();
-        currentSearchQuery = "";
-        view.clearSearchQuery();
-        currentDisplayedMeals = new ArrayList<>(allMeals);
-        view.showAllMeals(allMeals);
+        applyFiltersToResults();
+
         Log.d(TAG, "Filters reset");
     }
-    private void applySearchAndFilters() {
-        if (allMeals.isEmpty()) {
+    private void applyFiltersToResults() {
+        if (currentSearchResults.isEmpty()) {
+            view.showEmptyResults();
             return;
         }
-        view.showLoading();
+
         disposables.add(
-                repository.searchMeals(
-                                currentSearchQuery.isEmpty() ? null : currentSearchQuery,
-                                selectedCategories.isEmpty() ? null : selectedCategories,
-                                selectedAreas.isEmpty() ? null : selectedAreas,
-                                selectedIngredients.isEmpty() ? null : selectedIngredients
-                        )
-                        .subscribeOn(Schedulers.io())
+                Observable.fromIterable(currentSearchResults)
+                        .filter(meal -> {
+                            if (!selectedCategories.isEmpty()) {
+                                if (!selectedCategories.contains(meal.getCategory())) {
+                                    return false;
+                                }
+                            }
+                            if (!selectedAreas.isEmpty()) {
+                                if (!selectedAreas.contains(meal.getArea())) {
+                                    return false;
+                                }
+                            }
+                            if (!selectedIngredients.isEmpty()) {
+                                List<String> mealIngredientNames = meal.getIngredients().stream()
+                                        .map(IngredientItem::getName)
+                                        .map(String::toLowerCase)
+                                        .collect(Collectors.toList());
+
+                                for (String selectedIngredient : selectedIngredients) {
+                                    boolean found = false;
+                                    for (String mealIngredient : mealIngredientNames) {
+                                        if (mealIngredient.contains(selectedIngredient.toLowerCase())) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        return false;
+                                    }
+                                }
+                            }
+
+                            return true;
+                        })
+                        .toList()
+                        .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 filteredMeals -> {
-                                    view.hideLoading();
-                                    currentDisplayedMeals = filteredMeals;
-
                                     if (filteredMeals.isEmpty()) {
                                         view.showEmptyResults();
                                     } else {
                                         view.showSearchResults(filteredMeals);
                                     }
-
-                                    Log.d(TAG, "Search and filter applied. Results: " + filteredMeals.size());
+                                    Log.d(TAG, "Filtered results: " + filteredMeals.size() + " meals");
                                 },
                                 error -> {
-                                    view.hideLoading();
-                                    view.showError("Search failed: " + error.getMessage());
-                                    Log.e(TAG, "Search error", error);
+                                    Log.e(TAG, "Filter error", error);
+                                    view.showError("Filter failed: " + error.getMessage());
                                 }
                         )
         );
@@ -209,9 +249,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     public void onDestroy() {
         disposables.clear();
     }
-
-    private static class SearchData {
-        List<Meal> meals;
+    private static class FilterOptionsData {
         List<Category> categories;
         List<String> areas;
         List<String> ingredients;

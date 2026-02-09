@@ -11,7 +11,6 @@ public interface SearchContract {
         void showLoading();
         void hideLoading();
         void showNoInternetError();
-        void showAllMeals(List<Meal> meals);
         void showSearchResults(List<Meal> meals);
         void showEmptyResults();
         void showFilterDialog(List<Category> categories, List<String> areas, List<String> ingredients);
