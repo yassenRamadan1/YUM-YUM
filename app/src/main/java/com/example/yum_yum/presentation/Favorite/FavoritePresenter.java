@@ -6,7 +6,6 @@ import android.util.Log;
 import com.example.yum_yum.data.auth.repository.AuthRepository;
 import com.example.yum_yum.data.meals.repository.MealsRepository;
 import com.example.yum_yum.presentation.model.Meal;
-
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -22,15 +21,36 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
     public FavoritePresenter(FavoriteContract.View view, Context context) {
         this.view = view;
         this.mealsRepository = new MealsRepository(context);
-        this.authRepository = new AuthRepository();
+        this.authRepository = new AuthRepository(context);
         this.disposables = new CompositeDisposable();
     }
 
     @Override
     public void loadFavoriteMeals() {
         view.showLoading();
+
         disposables.add(
-                authRepository.getCurrentUser()
+                authRepository.isUserLoggedIn()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(isLoggedIn -> {
+                            if (isLoggedIn) {
+                                fetchUserAndMeals();
+                            } else {
+                                view.hideLoading();
+                                view.showLoginRequired();
+                            }
+                        }, error -> {
+                            view.hideLoading();
+                            Log.e(TAG, "Error checking login status", error);
+                            view.showError("Unknown error occurred");
+                        })
+        );
+    }
+
+    private void fetchUserAndMeals() {
+        disposables.add(
+                authRepository.getCurrentUserUUIDFromLocal()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -40,7 +60,8 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
                                 },
                                 error -> {
                                     view.hideLoading();
-                                    view.showLoginRequired();
+                                    Log.e(TAG, "Error fetching User ID", error);
+                                    view.showError("Failed to load user data");
                                 }
                         )
         );
@@ -54,7 +75,7 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
                         .subscribe(
                                 meals -> {
                                     view.hideLoading();
-                                    if (meals.isEmpty()) {
+                                    if (meals == null || meals.isEmpty()) {
                                         view.showEmptyState();
                                     } else {
                                         view.showFavoriteMeals(meals);
@@ -76,11 +97,10 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
 
     @Override
     public void confirmRemoveFavorite(Meal meal) {
-        if (currentUserId == null) {
-            view.showLoginRequired();
+        if (currentUserId == null || currentUserId.isEmpty()) {
+            view.showError("Session expired, please login again.");
             return;
         }
-
         disposables.add(
                 mealsRepository.removeFromFavorites(currentUserId, meal.getId())
                         .subscribeOn(Schedulers.io())
@@ -89,7 +109,7 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
                                 () -> {
                                     view.removeMealFromList(meal.getId());
                                     view.showMessage("Removed from favorites");
-                                },
+                                    },
                                 error -> {
                                     Log.e(TAG, "Error removing favorite", error);
                                     view.showError("Failed to remove favorite");

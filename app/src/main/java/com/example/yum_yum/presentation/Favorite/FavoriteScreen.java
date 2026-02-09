@@ -71,15 +71,15 @@ public class FavoriteScreen extends Fragment implements FavoriteContract.View {
     public void showLoginRequired() {
         binding.favRecycle.setVisibility(View.GONE);
         binding.loadingIndicatorHome.setVisibility(View.GONE);
-        binding.textviewAddItemsHere.setVisibility(View.VISIBLE);
-        binding.textviewAddItemsHere.setText("You must login to view your favorite meals");
+        binding.loginRequiredState.setVisibility(View.VISIBLE);
+
     }
 
     @Override
     public void showFavoriteMeals(List<Meal> meals) {
         binding.favRecycle.setVisibility(View.VISIBLE);
         binding.loadingIndicatorHome.setVisibility(View.GONE);
-        binding.textviewAddItemsHere.setVisibility(View.GONE);
+        binding.loginRequiredState.setVisibility(View.GONE);
         adapter.setMeals(meals);
     }
 
@@ -87,14 +87,14 @@ public class FavoriteScreen extends Fragment implements FavoriteContract.View {
     public void showEmptyState() {
         binding.favRecycle.setVisibility(View.GONE);
         binding.loadingIndicatorHome.setVisibility(View.GONE);
-        binding.textviewAddItemsHere.setVisibility(View.VISIBLE);
-        binding.textviewAddItemsHere.setText(R.string.here_you_can_add_your_favourite_recieps);
+        binding.stateTitle.setText(R.string.no_favorite_recipes);
+        binding.stateSubtitle.setText(R.string.here_you_can_add_your_favourite_recieps);
     }
 
     @Override
     public void showLoading() {
         binding.loadingIndicatorHome.setVisibility(View.VISIBLE);
-        binding.textviewAddItemsHere.setVisibility(View.GONE);
+        binding.loginRequiredState.setVisibility(View.GONE);
     }
 
     @Override
