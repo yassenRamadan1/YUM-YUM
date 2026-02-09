@@ -49,4 +49,8 @@
     <string name="no_favorite_recipes">No Favorite Recipes Yet</string>
     <string name="profile">Profile</string>
     <string name="log_out">Log Out</string>
+    <string name="explore_more_meals">Explore More Meals</string>
+    <string name="areas">Areas</string>
+    <string name="ingredients_tab">Ingredients</string>
+    <string name="no_meals_found">No meals found</string>
 </resources>

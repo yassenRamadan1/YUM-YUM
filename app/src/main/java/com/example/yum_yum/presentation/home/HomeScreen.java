@@ -58,6 +58,9 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
         initRecyclerView();
         presenter.getHomeContent();
 
+        binding.exploreMoreCard.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_homeScreen_to_exploreFragment));
+
         binding.avatarImageView.setOnClickListener(v -> {
             if(binding.usernameTextview.getText().toString().isEmpty() || binding.usernameTextview.getText().toString().equals("Guest")) {
                 Toast.makeText(getContext(), "Please log in to view your profile", Toast.LENGTH_SHORT).show();

@@ -65,6 +65,9 @@
         <action
             android:id="@+id/action_homeScreen_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchScreen"
@@ -103,4 +106,28 @@
         android:id="@+id/profileFragment"
         android:name="com.example.yum_yum.presentation.profile.ProfileFragment"
         android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/exploreFragment"
+        android:name="com.example.yum_yum.presentation.explore.ExploreFragment"
+        android:label="fragment_explore"
+        tools:layout="@layout/fragment_explore">
+        <action
+            android:id="@+id/action_exploreFragment_to_filteredMealsFragment"
+            app:destination="@id/filteredMealsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filteredMealsFragment"
+        android:name="com.example.yum_yum.presentation.filteredMeals.FilteredMealsFragment"
+        android:label="fragment_filtered_meals"
+        tools:layout="@layout/fragment_filtered_meals">
+        <argument
+            android:name="filter_type"
+            app:argType="string" />
+        <argument
+            android:name="filter_value"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_filteredMealsFragment_to_mealDetailsScreen"
+            app:destination="@id/mealDetailsScreen" />
+    </fragment>
 </navigation>
