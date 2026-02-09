@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 
 import com.example.yum_yum.data.auth.repository.AuthRepository;
+import com.example.yum_yum.presentation.home.HomePresenterImpl;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -14,11 +15,13 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
     private final RegisterContract.View view;
     private final AuthRepository repository;
     private final CompositeDisposable disposable;
+    private final Context context;
 
     public RegisterPresenterImpl(RegisterContract.View view, Context context) {
         this.view = view;
         this.repository = new AuthRepository(context);
         this.disposable = new CompositeDisposable();
+        this.context = context;
     }
 
     @Override
@@ -55,6 +58,9 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
+                                    if( HomePresenterImpl .getInstance(context.getApplicationContext()) != null) {
+                                        HomePresenterImpl.resetInstance();
+                                    }
                                     view.hideLoading();
                                     view.navigateToHome();
                                 },
@@ -80,6 +86,9 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
+                                        if( HomePresenterImpl .getInstance(context.getApplicationContext()) != null) {
+                                            HomePresenterImpl.resetInstance();
+                                        }
                                     view.hideLoading();
                                     view.navigateToHome();
                                 },

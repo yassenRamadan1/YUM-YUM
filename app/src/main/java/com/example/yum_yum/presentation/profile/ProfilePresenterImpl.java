@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.yum_yum.data.auth.repository.AuthRepository;
 import com.example.yum_yum.data.meals.repository.MealsRepository;
+import com.example.yum_yum.presentation.home.HomePresenterImpl;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -47,6 +48,7 @@ public class ProfilePresenterImpl implements ProfileContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
+                                    HomePresenterImpl.resetInstance();
                                     view.hideLoading();
                                     view.navigateToWelcome();
                                 },
