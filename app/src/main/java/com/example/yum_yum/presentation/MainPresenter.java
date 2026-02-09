@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.example.yum_yum.R;
 import com.example.yum_yum.data.auth.repository.AuthRepository;
-import com.example.yum_yum.presentation.utils.NetworkUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +22,6 @@ public class MainPresenter implements MainContract.Presenter {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private final AuthRepository authRepository;
     private final Context context;
-
-    private final BehaviorSubject<Integer> destinationSubject = BehaviorSubject.createDefault(-1);
 
     private final List<Integer> offlineFragments = Arrays.asList(
             R.id.favoriteScreen,
@@ -68,38 +65,7 @@ public class MainPresenter implements MainContract.Presenter {
         );
     }
 
-    @Override
-    public void startNetworkMonitoring() {
-        disposable.add(
-                Observable.combineLatest(
-                                NetworkUtil.getNetworkStatusObservable(context),
-                                destinationSubject,
-                                (isConnected, currentDestinationId) -> {
-                                    if (isConnected) {
-                                        return false;
-                                    } else {
-                                        boolean isSafeScreen = offlineFragments.contains(currentDestinationId);
-                                        return !isSafeScreen;
-                                    }
-                                }
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(shouldShowError -> {
-                            if (shouldShowError) {
-                                view.showNetworkError();
-                            } else {
-                                view.hideNetworkError();
-                            }
-                        }, Throwable::printStackTrace)
-        );
-    }
 
-    @Override
-    public void onDestinationChanged(int destinationId) {
-
-        destinationSubject.onNext(destinationId);
-    }
 
     @Override
     public void onDestroy() {

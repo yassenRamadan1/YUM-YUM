@@ -55,13 +55,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         });
         setupUI();
         presenter.checkAppStartDestination();
-        presenter.startNetworkMonitoring();
     }
 
     private void setupUI() {
         EdgeToEdge.enable(this);
         bottomNav = findViewById(R.id.nav_bar);
-        noInternetView = findViewById(R.id.view_no_internet);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
@@ -70,16 +68,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                presenter.onDestinationChanged(id);
                 if (id == R.id.welcomeScreen || id == R.id.loginScreen ||
                         id == R.id.registerFragment || id == R.id.mealDetailsScreen ||
                         id == R.id.profileFragment || id == R.id.exploreFragment ||
                         id == R.id.filteredMealsFragment) {
                     bottomNav.setVisibility(View.GONE);
                 } else {
-                    if (noInternetView.getVisibility() != View.VISIBLE) {
+
                         bottomNav.setVisibility(View.VISIBLE);
-                    }
+
                 }
             });
         }
@@ -90,22 +87,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             return insets;
         });
     }
-
-
-    @Override
-    public void showNetworkError() {
-        if (noInternetView != null) {
-            noInternetView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void hideNetworkError() {
-        if (noInternetView != null) {
-            noInternetView.setVisibility(View.GONE);
-        }
-    }
-
     @Override
     public void showLoading() {
         keepSplashOnScreen = true;

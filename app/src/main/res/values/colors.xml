@@ -7,7 +7,7 @@
     <color name="text_hint">#BDBDBD</color>
     <color name="text_on_primary">#FFFFFF</color>
     <color name="label_normal_color">#9904030A</color>
-
+    <color name="search_icon_stroke_color">#61FAFAFA</color>
     <color name="text_chips">#DEFAFAFA</color>
     <color name="text_unselectedChips">#DEFF1747</color>
     <color name="text_selectedChips">#DEFAFAFA</color>
