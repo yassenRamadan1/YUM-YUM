@@ -61,7 +61,11 @@
         android:id="@+id/searchScreen"
         android:name="com.example.yum_yum.presentation.search.SearchScreen"
         android:label="fragment_search_screen"
-        tools:layout="@layout/fragment_search_screen" />
+        tools:layout="@layout/fragment_search_screen" >
+        <action
+            android:id="@+id/action_searchScreen_to_mealDetailsScreen"
+            app:destination="@id/mealDetailsScreen" />
+    </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.yum_yum.presentation.register.RegisterFragment"
