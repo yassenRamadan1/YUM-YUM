@@ -10,6 +10,12 @@
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true"
             app:launchSingleTop="true"/>
+    <action
+        android:id="@+id/action_global_welcomeScreen"
+        app:destination="@id/welcomeScreen"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true"
+        app:launchSingleTop="true"/>
 
     <fragment
         android:id="@+id/welcomeScreen"
@@ -56,6 +62,9 @@
         <action
             android:id="@+id/action_homeScreen_to_mealDetailsScreen"
             app:destination="@id/mealDetailsScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchScreen"
@@ -90,4 +99,8 @@
             android:id="@+id/action_mealDetailsScreen_to_loginScreen"
             app:destination="@id/loginScreen" />
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.yum_yum.presentation.profile.ProfileFragment"
+        android:label="ProfileFragment" />
 </navigation>
