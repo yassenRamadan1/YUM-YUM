@@ -34,7 +34,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_calendar_day" />
 
-    <!-- Divider -->
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
