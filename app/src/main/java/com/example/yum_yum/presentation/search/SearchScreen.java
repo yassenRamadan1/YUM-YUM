@@ -1,4 +1,5 @@
 package com.example.yum_yum.presentation.search;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +27,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+
 public class SearchScreen extends Fragment implements SearchContract.View, FilterBottomSheetFragment.FilterListener {
 
     private FragmentSearchScreenBinding binding;
@@ -53,8 +55,8 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
         setupRecyclerView();
         setupSearchInput();
         setupFilterIcon();
-        showInitialEmptyState();
         presenter.onViewCreated();
+        presenter.startNetworkMonitoring(requireContext());
     }
 
     private void setupRecyclerView() {
@@ -103,16 +105,6 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
         });
     }
 
-
-    private void showInitialEmptyState() {
-        if (binding != null) {
-            binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
-            binding.tvEmptyState.setVisibility(View.VISIBLE);
-            binding.tvEmptyState.setText("Type any meal name to search");
-        }
-    }
-
-
     @Override
     public void showLoading() {
         if (binding != null) {
@@ -132,11 +124,26 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     @Override
     public void showNoInternetError() {
         if (binding != null) {
+            binding.noInternetView.getRoot().setVisibility(View.VISIBLE);
             binding.loadingIndicatorSearch.setVisibility(View.GONE);
             binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
-            binding.tvEmptyState.setVisibility(View.VISIBLE);
-            binding.tvEmptyState.setText("No internet connection");
+            binding.tvEmptyState.setVisibility(View.GONE);
+        }
+    }
 
+    @Override
+    public void hideNoInternetError() {
+        if (binding != null) {
+            binding.noInternetView.getRoot().setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showInitialState() {
+        if (binding != null) {
+            binding.recyclerSearchResult.setVisibility(View.INVISIBLE);
+            binding.tvEmptyState.setVisibility(View.VISIBLE);
+            binding.tvEmptyState.setText("Type any meal name to search");
         }
     }
 
@@ -174,8 +181,7 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void navigateToMealDetails(Meal meal) {
         if (binding != null && meal != null) {
             Bundle bundle = new Bundle();
-            bundle.putSerializable("meal", meal);
-
+            bundle.putSerializable("meal_data", meal);
             Navigation.findNavController(binding.getRoot())
                     .navigate(R.id.action_searchScreen_to_mealDetailsScreen, bundle);
         }
@@ -192,10 +198,9 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
     public void clearSearchQuery() {
         if (binding != null) {
             binding.etSearchQuery.setText("");
-            showInitialEmptyState();
+            showInitialState();
         }
     }
-
 
     @Override
     public void onFiltersApplied(List<String> categories, List<String> areas, List<String> ingredients) {
@@ -207,13 +212,18 @@ public class SearchScreen extends Fragment implements SearchContract.View, Filte
         presenter.onFiltersReset();
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        searchSubject.onComplete();
         disposables.clear();
+        presenter.stopNetworkMonitoring();
         presenter.onDestroy();
         binding = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        searchSubject.onComplete();
     }
 }

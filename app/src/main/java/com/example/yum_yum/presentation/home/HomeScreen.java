@@ -22,7 +22,6 @@ import com.example.yum_yum.R;
 import com.example.yum_yum.databinding.FragmentHomeScreenBinding;
 import com.example.yum_yum.presentation.model.Meal;
 import com.example.yum_yum.presentation.utils.FlagManger;
-import com.example.yum_yum.presentation.utils.ImageUtils;
 
 import java.util.List;
 
@@ -68,7 +67,10 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
             }
             Navigation.findNavController(v).navigate(R.id.action_homeScreen_to_profileFragment);
         });
+
+        presenter.startNetworkMonitoring(requireContext());
     }
+
     private void initRecyclerView() {
         mealsAdapter = new CountryMealsAdapter(requireContext(), this);
         binding.recipesOfCountryRecyclerview.setAdapter(mealsAdapter);
@@ -81,6 +83,7 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
             binding.loadingIndicatorHome.setVisibility(View.VISIBLE);
         }
     }
+
     @Override
     public void hideLoading() {
         if (binding != null) {
@@ -118,6 +121,7 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
         String flagUrl = flagManger.getFlagUrl(countryName);
         loadImage(binding.countryOfTheDayImageview, flagUrl);
     }
+
     @Override
     public void showError(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
@@ -127,6 +131,22 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
     public void showUserName(String name) {
         if (binding != null) {
             binding.usernameTextview.setText(name);
+        }
+    }
+
+    @Override
+    public void showNoInternetError() {
+        if (binding != null) {
+            binding.noInternetView.getRoot().setVisibility(View.VISIBLE);
+            binding.contentScrollView.setVisibility(View.GONE);
+            binding.loadingIndicatorHome.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void hideNoInternetError() {
+        if (binding != null) {
+            binding.noInternetView.getRoot().setVisibility(View.GONE);
         }
     }
 
@@ -147,6 +167,7 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
                 extras
         );
     }
+
     @Override
     public void onMealClick(Meal meal, ImageView sharedImageView) {
         navigateToDetails(meal, sharedImageView);
@@ -155,10 +176,10 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        presenter.stopNetworkMonitoring();
         presenter.detachView();
         binding = null;
     }
-
 
     @Override
     public void onDestroy() {

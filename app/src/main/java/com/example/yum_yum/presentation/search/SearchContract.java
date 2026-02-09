@@ -1,5 +1,7 @@
 package com.example.yum_yum.presentation.search;
 
+import android.content.Context;
+
 import com.example.yum_yum.presentation.model.Category;
 import com.example.yum_yum.presentation.model.Meal;
 
@@ -11,6 +13,8 @@ public interface SearchContract {
         void showLoading();
         void hideLoading();
         void showNoInternetError();
+        void hideNoInternetError();
+        void showInitialState();
         void showSearchResults(List<Meal> meals);
         void showEmptyResults();
         void showFilterDialog(List<Category> categories, List<String> areas, List<String> ingredients);
@@ -20,15 +24,14 @@ public interface SearchContract {
     }
 
     interface Presenter {
-
         void onViewCreated();
         void onDestroy();
-        void checkInternetAndLoadData();
+        void startNetworkMonitoring(Context context);
+        void stopNetworkMonitoring();
         void onSearchQueryChanged(String query);
         void onFilterIconClicked();
         void onFiltersApplied(List<String> selectedCategories, List<String> selectedAreas, List<String> selectedIngredients);
         void onFiltersReset();
         void onMealClicked(Meal meal);
-        void onRetryClicked();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.yum_yum.presentation.home;
 
+import android.content.Context;
+
 import com.example.yum_yum.presentation.model.Meal;
 
 import java.util.List;
@@ -12,6 +14,8 @@ public interface HomeContract {
         void showDailyCountryMeals(List<Meal> meals, String countryName);
         void showError(String message);
         void showUserName(String name);
+        void showNoInternetError();
+        void hideNoInternetError();
     }
 
     interface Presenter {
@@ -19,6 +23,8 @@ public interface HomeContract {
         void detachView();
         void getHomeContent();
         void refreshHomeContent();
+        void startNetworkMonitoring(Context context);
+        void stopNetworkMonitoring();
         void onDestroy();
     }
 }

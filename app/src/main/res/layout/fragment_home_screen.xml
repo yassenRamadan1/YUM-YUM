@@ -271,4 +271,8 @@
         android:layout_gravity="center"
         android:visibility="visible"/>
 
+    <include
+        android:id="@+id/no_internet_view"
+        layout="@layout/view_no_internet"/>
+
 </FrameLayout>

@@ -17,6 +17,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SearchPresenter implements SearchContract.Presenter {
@@ -34,6 +35,11 @@ public class SearchPresenter implements SearchContract.Presenter {
     private List<String> selectedAreas = new ArrayList<>();
     private List<String> selectedIngredients = new ArrayList<>();
 
+    private Disposable networkDisposable;
+    private boolean wasDisconnected = false;
+    private boolean isConnected = true;
+    private String lastSearchQuery = "";
+
     public SearchPresenter(Context context, SearchContract.View view) {
         this.view = view;
         this.repository = new MealsRepository(context);
@@ -46,8 +52,41 @@ public class SearchPresenter implements SearchContract.Presenter {
     }
 
     @Override
-    public void checkInternetAndLoadData() {
-        loadFilterOptions();
+    public void startNetworkMonitoring(Context context) {
+        stopNetworkMonitoring();
+        wasDisconnected = false;
+        networkDisposable = NetworkUtil.getNetworkStatusObservable(context)
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        connected -> {
+                            isConnected = connected;
+                            if (connected) {
+                                view.hideNoInternetError();
+                                if (wasDisconnected) {
+                                    wasDisconnected = false;
+                                    loadFilterOptions();
+                                    if (lastSearchQuery.isEmpty()) {
+                                        view.showInitialState();
+                                    } else {
+                                        searchMealsByName(lastSearchQuery);
+                                    }
+                                }
+                            } else {
+                                wasDisconnected = true;
+                                view.showNoInternetError();
+                            }
+                        },
+                        throwable -> { }
+                );
+    }
+
+    @Override
+    public void stopNetworkMonitoring() {
+        if (networkDisposable != null && !networkDisposable.isDisposed()) {
+            networkDisposable.dispose();
+            networkDisposable = null;
+        }
     }
 
     private void loadFilterOptions() {
@@ -85,13 +124,21 @@ public class SearchPresenter implements SearchContract.Presenter {
     @Override
     public void onSearchQueryChanged(String query) {
         if (query == null || query.trim().isEmpty()) {
+            lastSearchQuery = "";
             currentSearchResults.clear();
-            view.showEmptyResults();
+            view.showInitialState();
             return;
         }
 
-        searchMealsByName(query.trim());
+        lastSearchQuery = query.trim();
+
+        if (!isConnected) {
+            return;
+        }
+
+        searchMealsByName(lastSearchQuery);
     }
+
     private void searchMealsByName(String query) {
         view.showLoading();
 
@@ -108,8 +155,8 @@ public class SearchPresenter implements SearchContract.Presenter {
                                 error -> {
                                     view.hideLoading();
                                     Log.e(TAG, "Search error", error);
-                                        view.showError("Search failed: " + error.getMessage());
-                                        view.showEmptyResults();
+                                    view.showError("Search failed: " + error.getMessage());
+                                    view.showEmptyResults();
                                 }
                         )
         );
@@ -151,6 +198,7 @@ public class SearchPresenter implements SearchContract.Presenter {
 
         Log.d(TAG, "Filters reset");
     }
+
     private void applyFiltersToResults() {
         if (currentSearchResults.isEmpty()) {
             view.showEmptyResults();
@@ -220,14 +268,11 @@ public class SearchPresenter implements SearchContract.Presenter {
     }
 
     @Override
-    public void onRetryClicked() {
-        checkInternetAndLoadData();
-    }
-
-    @Override
     public void onDestroy() {
+        stopNetworkMonitoring();
         disposables.clear();
     }
+
     private static class FilterOptionsData {
         List<Category> categories;
         List<String> areas;

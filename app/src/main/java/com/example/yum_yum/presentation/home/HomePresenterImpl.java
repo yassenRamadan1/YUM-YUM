@@ -7,8 +7,10 @@ import android.content.Context;
 import com.example.yum_yum.data.auth.repository.AuthRepository;
 import com.example.yum_yum.data.meals.dto.HomeContentData;
 import com.example.yum_yum.data.meals.repository.MealsRepository;
+import com.example.yum_yum.presentation.utils.NetworkUtil;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class HomePresenterImpl implements HomeContract.Presenter {
@@ -20,6 +22,8 @@ public class HomePresenterImpl implements HomeContract.Presenter {
     private String currentUserName;
     private final AuthRepository authRepository;
     private boolean isLoading = false;
+    private Disposable networkDisposable;
+    private boolean wasDisconnected = false;
 
     private HomePresenterImpl(Context context) {
         this.repository = new MealsRepository(context.getApplicationContext());
@@ -156,6 +160,42 @@ public class HomePresenterImpl implements HomeContract.Presenter {
         );
     }
 
+    @Override
+    public void startNetworkMonitoring(Context context) {
+        stopNetworkMonitoring();
+        wasDisconnected = false;
+        networkDisposable = NetworkUtil.getNetworkStatusObservable(context)
+                .distinctUntilChanged()
+                .observeOn(mainThread())
+                .subscribe(
+                        isConnected -> {
+                            if (isConnected) {
+                                if (view != null) {
+                                    view.hideNoInternetError();
+                                }
+                                if (wasDisconnected) {
+                                    wasDisconnected = false;
+                                    refreshHomeContent();
+                                }
+                            } else {
+                                wasDisconnected = true;
+                                if (view != null) {
+                                    view.showNoInternetError();
+                                }
+                            }
+                        },
+                        throwable -> { }
+                );
+    }
+
+    @Override
+    public void stopNetworkMonitoring() {
+        if (networkDisposable != null && !networkDisposable.isDisposed()) {
+            networkDisposable.dispose();
+            networkDisposable = null;
+        }
+    }
+
     public void clearMemoryCache() {
         cachedHomeContent = null;
     }
@@ -166,6 +206,7 @@ public class HomePresenterImpl implements HomeContract.Presenter {
 
     @Override
     public void onDestroy() {
+        stopNetworkMonitoring();
         disposables.clear();
         view = null;
         cachedHomeContent = null;

@@ -81,5 +81,8 @@
         style="@style/App.Custom.Indicator"
         android:visibility="gone"/>
 
+    <include
+        android:id="@+id/no_internet_view"
+        layout="@layout/view_no_internet"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
