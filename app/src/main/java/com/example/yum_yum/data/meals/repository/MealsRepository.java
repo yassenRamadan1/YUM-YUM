@@ -181,8 +181,18 @@ public class MealsRepository {
                     for (String mealId : uniqueMealIds) {
                         mealDetailRequests.add(
                                 networkDataSource.getMealById(mealId)
-                                        .map(response -> mapToUiModel(response.getMeals().get(0)))
-                                        .onErrorReturnItem(null)
+                                        .map(response -> {
+                                            Log.d("MealsRepository", "Fetched details for meal ID: " + mealId);
+                                            return mapToUiModel(response.getMeals().get(0));})
+                                        .onErrorReturnItem(  new Meal(  mealId,
+                                                "",
+                                                "",
+                                                "",
+                                                "",
+                                                "",
+                                                "",
+                                                new ArrayList<>()
+                                        ))
                         );
                     }
                     return Single.zip(mealDetailRequests, objects -> {
@@ -201,7 +211,7 @@ public class MealsRepository {
                     Log.d(TAG, "Cached " + meals.size() + " meals");
                 });
     }
-    public Single<List<Category>> getAllCategories(boolean forceRefresh) {
+    public Single<List<Category>> getAllCategories() {
         if ( allCategoriesCache != null) {
             return Single.just(allCategoriesCache);
         }
@@ -213,7 +223,7 @@ public class MealsRepository {
                     Log.d(TAG, "Cached " + categories.size() + " categories");
                 });
     }
-    public Single<List<String>> getAllAreas(boolean forceRefresh) {
+    public Single<List<String>> getAllAreas() {
         if (allAreasCache != null) {
             return Single.just(allAreasCache);
         }
