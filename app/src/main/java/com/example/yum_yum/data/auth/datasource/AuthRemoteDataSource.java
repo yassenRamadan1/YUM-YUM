@@ -31,17 +31,6 @@ public class AuthRemoteDataSource {
         });
     }
 
-    public Single<String> getCurrentUser() {
-        return Single.create(emitter -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                emitter.onSuccess(user.getDisplayName() != null ? user.getDisplayName() : "User");
-            } else {
-                emitter.onError(new Exception("No user logged in"));
-            }
-        });
-    }
-
     public Completable firebaseAuthWithGoogle(String idToken) {
         return Completable.create(emitter -> {
             AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
@@ -49,5 +38,31 @@ public class AuthRemoteDataSource {
                     .addOnSuccessListener(authResult -> emitter.onComplete())
                     .addOnFailureListener(emitter::onError);
         });
+    }
+
+    public Single<String> getCurrentUserUuid() {
+        return Single.create(emitter -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) emitter.onSuccess(user.getUid());
+            else emitter.onError(new Exception("No user found"));
+        });
+    }
+    public Single<String> getCurrentUserName() {
+        return Single.create(emitter -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            String name = (user != null && user.getDisplayName() != null) ? user.getDisplayName() : "User";
+            emitter.onSuccess(name);
+        });
+    }
+    public Single<String> getCurrentUserEmail() {
+        return Single.create(emitter -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null && user.getEmail() != null) emitter.onSuccess(user.getEmail());
+            else emitter.onError(new Exception("No email found"));
+        });
+    }
+
+    public Completable logout() {
+        return Completable.fromAction(firebaseAuth::signOut);
     }
 }
