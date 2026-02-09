@@ -40,7 +40,7 @@ public class AuthRepository {
                         remoteDataSource.getCurrentUserUuid(),
                         remoteDataSource.getCurrentUserName(),
                         remoteDataSource.getCurrentUserEmail(),
-                        (uuid, name, email) -> new String[]{uuid, name, email} // Zip results
+                        (uuid, name, email) -> new String[]{uuid, name, email}
                 ))
                 .flatMapCompletable(data -> saveUserSession(data[1], data[2], data[0]));
     }
@@ -76,5 +76,8 @@ public class AuthRepository {
 
     public Completable setFirstTimeLaunchComplete() {
         return Completable.fromAction(() -> localDataSource.setFirstTimeAppOpen(false));
+    }
+    public Single<String> getCurrentUserName() {
+        return Single.fromCallable(localDataSource::getUserName);
     }
 }
