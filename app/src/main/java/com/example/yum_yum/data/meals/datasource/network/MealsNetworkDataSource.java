@@ -42,4 +42,8 @@ public class MealsNetworkDataSource {
     public Single<MealResponse> searchMealByName(String mealName) {
         return mealService.searchMealByName(mealName);
     }
+
+    public Single<MealResponse> getMealsByIngredient(String ingredient) {
+        return mealService.filterByIngredient(ingredient);
+    }
 }

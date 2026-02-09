@@ -265,6 +265,53 @@ public class MealsRepository {
                     Log.d(TAG, "Cached " + ingredients.size() + " ingredients");
                 });
     }
+    public Single<List<Meal>> getMealsByCategory(String category) {
+        return networkDataSource.getMealsByCategory(category)
+                .map(response -> {
+                    List<Meal> meals = new ArrayList<>();
+                    if (response.getMeals() != null) {
+                        for (MealDto dto : response.getMeals()) {
+                            meals.add(new Meal(dto.getId(), dto.getName(), dto.getThumbnail(),
+                                    "", "", "", "", new ArrayList<>()));
+                        }
+                    }
+                    return meals;
+                });
+    }
+
+    public Single<List<Meal>> getMealsByArea(String area) {
+        return networkDataSource.getMealsByArea(area)
+                .map(response -> {
+                    List<Meal> meals = new ArrayList<>();
+                    if (response.getMeals() != null) {
+                        for (MealDto dto : response.getMeals()) {
+                            meals.add(new Meal(dto.getId(), dto.getName(), dto.getThumbnail(),
+                                    "", "", "", "", new ArrayList<>()));
+                        }
+                    }
+                    return meals;
+                });
+    }
+
+    public Single<List<Meal>> getMealsByIngredient(String ingredient) {
+        return networkDataSource.getMealsByIngredient(ingredient)
+                .map(response -> {
+                    List<Meal> meals = new ArrayList<>();
+                    if (response.getMeals() != null) {
+                        for (MealDto dto : response.getMeals()) {
+                            meals.add(new Meal(dto.getId(), dto.getName(), dto.getThumbnail(),
+                                    "", "", "", "", new ArrayList<>()));
+                        }
+                    }
+                    return meals;
+                });
+    }
+
+    public Single<Meal> getMealById(String id) {
+        return networkDataSource.getMealById(id)
+                .map(response -> mapToUiModel(response.getMeals().get(0)));
+    }
+
     public Single<List<Meal>> searchMeals(
             String query,
             List<String> selectedCategories,
