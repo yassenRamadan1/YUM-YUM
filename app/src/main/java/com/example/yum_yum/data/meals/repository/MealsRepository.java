@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MealsRepository {
     private final MealsNetworkDataSource networkDataSource;
@@ -390,23 +391,29 @@ public class MealsRepository {
         MealEntity mealEntity = convertToEntity(meal);
 
         return localDataSource.addToFavorites(mealEntity, userId)
-                .andThen(
+                .doOnComplete(() ->
                         firestoreDataSource.addFavorite(mealEntity)
-                                .andThen(
-                                        localDataSource.markFavoritesAsSynced(
-                                                userId,
-                                                java.util.Collections.singletonList(meal.getId())
-                                        )
+                                .andThen(localDataSource.markFavoritesAsSynced(
+                                        userId,
+                                        java.util.Collections.singletonList(meal.getId())
+                                ))
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(
+                                        () -> Log.d(TAG, "Firestore sync: favorite added"),
+                                        error -> Log.w(TAG, "Firestore sync failed for addFavorite", error)
                                 )
-                                .onErrorComplete()
                 );
     }
 
     public Completable removeFromFavorites(String userId, String mealId) {
         return localDataSource.removeFromFavorites(userId, mealId)
-                .andThen(
+                .doOnComplete(() ->
                         firestoreDataSource.removeFavorite(userId, mealId)
-                                .onErrorComplete()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(
+                                        () -> Log.d(TAG, "Firestore sync: favorite removed"),
+                                        error -> Log.w(TAG, "Firestore sync failed for removeFavorite", error)
+                                )
                 );
     }
 
@@ -430,6 +437,7 @@ public class MealsRepository {
 
     private Completable syncFavoritesFromFirestore(String userId) {
         return firestoreDataSource.getFavoritesForUser(userId)
+                .timeout(5, java.util.concurrent.TimeUnit.SECONDS)
                 .flatMapCompletable(meals -> {
                     if (meals.isEmpty()) {
                         return Completable.complete();
@@ -442,23 +450,29 @@ public class MealsRepository {
         MealEntity mealEntity = convertToEntity(meal);
 
         return localDataSource.addToWeeklyPlan(mealEntity, userId, date)
-                .andThen(
+                .doOnComplete(() ->
                         firestoreDataSource.addPlan(mealEntity)
-                                .andThen(
-                                        localDataSource.markPlansAsSynced(
-                                                userId,
-                                                java.util.Collections.singletonList(meal.getId())
-                                        )
+                                .andThen(localDataSource.markPlansAsSynced(
+                                        userId,
+                                        java.util.Collections.singletonList(meal.getId())
+                                ))
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(
+                                        () -> Log.d(TAG, "Firestore sync: plan added"),
+                                        error -> Log.w(TAG, "Firestore sync failed for addPlan", error)
                                 )
-                                .onErrorComplete()
                 );
     }
 
     public Completable removeFromWeeklyPlan(String userId, String mealId, String date) {
         return localDataSource.removeFromWeeklyPlan(userId, mealId, date)
-                .andThen(
+                .doOnComplete(() ->
                         firestoreDataSource.removePlan(userId, mealId, date)
-                                .onErrorComplete()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(
+                                        () -> Log.d(TAG, "Firestore sync: plan removed"),
+                                        error -> Log.w(TAG, "Firestore sync failed for removePlan", error)
+                                )
                 );
     }
 
@@ -482,6 +496,7 @@ public class MealsRepository {
 
     private Completable syncPlansFromFirestore(String userId, String startDate, String endDate) {
         return firestoreDataSource.getPlansForUser(userId, startDate, endDate)
+                .timeout(5, java.util.concurrent.TimeUnit.SECONDS)
                 .flatMapCompletable(meals -> {
                     if (meals.isEmpty()) {
                         return Completable.complete();

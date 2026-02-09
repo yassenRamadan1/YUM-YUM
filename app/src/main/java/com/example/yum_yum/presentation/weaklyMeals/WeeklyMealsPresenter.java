@@ -39,7 +39,27 @@ public class WeeklyMealsPresenter implements WeeklyMealsContract.Presenter {
         view.showLoading();
 
         disposables.add(
-                authRepository.getCurrentUserUUID()
+                authRepository.isUserLoggedIn()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(isLoggedIn -> {
+                            if (isLoggedIn) {
+                                fetchUserAndMeals();
+                            } else {
+                                view.hideLoading();
+                                view.showLoginRequired();
+                            }
+                        }, error -> {
+                            view.hideLoading();
+                            Log.e(TAG, "Error checking login status", error);
+                            view.showLoginRequired();
+                        })
+        );
+    }
+
+    private void fetchUserAndMeals() {
+        disposables.add(
+                authRepository.getCurrentUserUUIDFromLocal()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -49,6 +69,7 @@ public class WeeklyMealsPresenter implements WeeklyMealsContract.Presenter {
                                 },
                                 error -> {
                                     view.hideLoading();
+                                    Log.e(TAG, "Error fetching User ID", error);
                                     view.showLoginRequired();
                                 }
                         )
