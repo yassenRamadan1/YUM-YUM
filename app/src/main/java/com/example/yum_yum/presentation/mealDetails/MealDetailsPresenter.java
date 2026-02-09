@@ -26,14 +26,14 @@ public class MealDetailsPresenter implements MealDetailsContract.Presenter {
     public MealDetailsPresenter(MealDetailsContract.View view, Context context) {
         this.view = view;
         this.mealsRepository = new MealsRepository(context);
-        this.authRepository = new AuthRepository();
+        this.authRepository = new AuthRepository(context);
         this.disposables = new CompositeDisposable();
         getCurrentUser();
     }
 
     private void getCurrentUser() {
         disposables.add(
-                authRepository.getCurrentUser()
+                authRepository.getCurrentUserUUID()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

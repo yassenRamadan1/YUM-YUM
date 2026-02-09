@@ -1,6 +1,8 @@
 package com.example.yum_yum.presentation;
 
-import com.example.yum_yum.data.user.repository.UserRepository;
+import android.content.Context;
+
+import com.example.yum_yum.data.auth.repository.AuthRepository;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,27 +14,27 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MainPresenter implements MainContract.Presenter {
 
     private final MainContract.View view;
-    private final UserRepository userRepository;
     private final CompositeDisposable disposable = new CompositeDisposable();
+    private final AuthRepository authRepository ;
 
-    public MainPresenter(MainContract.View view, UserRepository userRepository) {
+    public MainPresenter(MainContract.View view, Context context) {
         this.view = view;
-        this.userRepository = userRepository;
+        this.authRepository = new AuthRepository(context);
     }
 
     @Override
     public void checkAppStartDestination() {
         view.showLoading();
         disposable.add(
-                userRepository.isFirstTimeLaunch()
+                authRepository.isFirstTimeLaunch()
                         .delay(1000, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.io())
                         .flatMap(isFirstTime -> {
                             if (isFirstTime) {
-                                return userRepository.setFirstTimeLaunchComplete()
+                                return authRepository.setFirstTimeLaunchComplete()
                                         .andThen(Single.just("WELCOME"));
                             } else {
-                                return userRepository.isUserLoggedIn()
+                                return authRepository.isUserLoggedIn()
                                         .map(isLoggedIn -> isLoggedIn ? "HOME" : "WELCOME");
                             }
                         })

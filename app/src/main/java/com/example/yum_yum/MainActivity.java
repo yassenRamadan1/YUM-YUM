@@ -1,7 +1,5 @@
 package com.example.yum_yum;
 
-import static java.lang.Thread.sleep;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -19,7 +17,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.yum_yum.data.user.repository.UserRepository;
 import com.example.yum_yum.presentation.MainContract;
 import com.example.yum_yum.presentation.MainPresenter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -33,8 +30,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        UserRepository repo = UserRepository.getInstance(getApplicationContext());
-        presenter = new MainPresenter(this, repo);
+        presenter = new MainPresenter(this,this.getApplicationContext());
         splashScreen.setKeepOnScreenCondition(() -> keepSplashOnScreen);
 
         splashScreen.setOnExitAnimationListener(splashScreenViewProvider -> {

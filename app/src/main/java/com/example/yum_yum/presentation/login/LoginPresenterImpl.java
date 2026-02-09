@@ -5,24 +5,20 @@ import android.text.TextUtils;
 import android.util.Patterns;
 
 import com.example.yum_yum.data.auth.repository.AuthRepository;
-import com.example.yum_yum.data.user.repository.UserRepository;
-import com.google.firebase.auth.FirebaseAuth;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class LoginPresenterImpl implements LoginContract.Presenter {
-    private LoginContract.View view;
-    private AuthRepository repository;
-    private CompositeDisposable disposable;
-    private UserRepository userRepository;
+    private final LoginContract.View view;
+    private final AuthRepository repository;
+    private final CompositeDisposable disposable;
 
     public LoginPresenterImpl(LoginContract.View view, Context context) {
         this.view = view;
-        this.repository = new AuthRepository();
+        this.repository = new AuthRepository(context);
         this.disposable = new CompositeDisposable();
-        this.userRepository = UserRepository.getInstance(context);
     }
 
     @Override
@@ -51,16 +47,8 @@ public class LoginPresenterImpl implements LoginContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
-                                    userRepository.saveUser(email.split("@")[0], email)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(() -> {
-                                                view.hideLoading();
-                                                view.navigateToHome();
-                                            }, throwable -> {
-                                                view.hideLoading();
-                                                view.showError("Failed to save user data");
-                                            });
+                                    view.hideLoading();
+                                    view.navigateToHome();
                                 },
                                 throwable -> {
                                     view.hideLoading();
@@ -80,25 +68,16 @@ public class LoginPresenterImpl implements LoginContract.Presenter {
                 repository.signInWithGoogle(idToken)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            repository.getCurrentUser()
-                                    .flatMapCompletable(name -> {
-                                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                                        return userRepository.saveUser(name, email);
-                                    })
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> {
-                                        view.hideLoading();
-                                        view.navigateToHome();
-                                    }, err -> {
-                                        view.hideLoading();
-                                        view.showError("Failed to save user data");
-                                    });
-                        }, error -> {
-                            view.hideLoading();
-                            view.showError(error.getMessage());
-                        })
+                        .subscribe(
+                                () -> {
+                                    view.hideLoading();
+                                    view.navigateToHome();
+                                },
+                                error -> {
+                                    view.hideLoading();
+                                    view.showError(error.getMessage());
+                                }
+                        )
         );
     }
     @Override

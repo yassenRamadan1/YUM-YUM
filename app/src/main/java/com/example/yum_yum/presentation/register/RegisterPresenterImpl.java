@@ -5,24 +5,20 @@ import android.text.TextUtils;
 import android.util.Patterns;
 
 import com.example.yum_yum.data.auth.repository.AuthRepository;
-import com.example.yum_yum.data.user.repository.UserRepository;
-import com.google.firebase.auth.FirebaseAuth;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RegisterPresenterImpl implements RegisterContract.Presenter {
-    private RegisterContract.View view;
-    private AuthRepository repository;
-    private UserRepository userRepository;
-    private CompositeDisposable disposable;
+    private final RegisterContract.View view;
+    private final AuthRepository repository;
+    private final CompositeDisposable disposable;
 
     public RegisterPresenterImpl(RegisterContract.View view, Context context) {
         this.view = view;
-        this.repository = new AuthRepository();
+        this.repository = new AuthRepository(context);
         this.disposable = new CompositeDisposable();
-        this.userRepository = UserRepository.getInstance(context);
     }
 
     @Override
@@ -54,21 +50,13 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
 
         view.showLoading();
         disposable.add(
-                repository.registerUser(email, password)
+                repository.registerUser(username, email, password)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
-                                    userRepository.saveUser(username, email)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(() -> {
-                                                view.hideLoading();
-                                                view.navigateToHome();
-                                            }, throwable -> {
-                                                view.hideLoading();
-                                                view.showError("Failed to save user data");
-                                            });
+                                    view.hideLoading();
+                                    view.navigateToHome();
                                 },
                                 throwable -> {
                                     view.hideLoading();
@@ -90,25 +78,16 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
                 repository.signInWithGoogle(idToken)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            repository.getCurrentUser()
-                                    .flatMapCompletable(name -> {
-                                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                                        return userRepository.saveUser(name, email);
-                                    })
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> {
-                                        view.hideLoading();
-                                        view.navigateToHome();
-                                    }, err -> {
-                                        view.hideLoading();
-                                        view.showError("Failed to save user data");
-                                    });
-                        }, error -> {
-                            view.hideLoading();
-                            view.showError(error.getMessage());
-                        })
+                        .subscribe(
+                                () -> {
+                                    view.hideLoading();
+                                    view.navigateToHome();
+                                },
+                                error -> {
+                                    view.hideLoading();
+                                    view.showError(error.getMessage());
+                                }
+                        )
         );
     }
 
@@ -120,6 +99,6 @@ public class RegisterPresenterImpl implements RegisterContract.Presenter {
 
     @Override
     public void onDestroy() {
-        if (disposable != null) disposable.dispose();
+        disposable.dispose();
     }
 }

@@ -30,7 +30,7 @@ public class WeeklyMealsPresenter implements WeeklyMealsContract.Presenter {
     public WeeklyMealsPresenter(WeeklyMealsContract.View view, Context context) {
         this.view = view;
         this.mealsRepository = new MealsRepository(context);
-        this.authRepository = new AuthRepository();
+        this.authRepository = new AuthRepository(context);
         this.disposables = new CompositeDisposable();
     }
 
@@ -39,7 +39,7 @@ public class WeeklyMealsPresenter implements WeeklyMealsContract.Presenter {
         view.showLoading();
 
         disposables.add(
-                authRepository.getCurrentUser()
+                authRepository.getCurrentUserUUID()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
