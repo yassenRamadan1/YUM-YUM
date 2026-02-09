@@ -24,7 +24,6 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     private final SearchContract.View view;
     private final MealsRepository repository;
-    private final NetworkUtil networkUtil;
     private final CompositeDisposable disposables;
 
     private List<Category> allCategories = new ArrayList<>();
@@ -38,25 +37,16 @@ public class SearchPresenter implements SearchContract.Presenter {
     public SearchPresenter(Context context, SearchContract.View view) {
         this.view = view;
         this.repository = new MealsRepository(context);
-        this.networkUtil = new NetworkUtil(context);
         this.disposables = new CompositeDisposable();
     }
 
     @Override
     public void onViewCreated() {
-        if (!networkUtil.isNetworkAvailable()) {
-            view.showNoInternetError();
-            return;
-        }
         loadFilterOptions();
     }
 
     @Override
     public void checkInternetAndLoadData() {
-        if (!networkUtil.isNetworkAvailable()) {
-            view.showNoInternetError();
-            return;
-        }
         loadFilterOptions();
     }
 
@@ -94,18 +84,12 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void onSearchQueryChanged(String query) {
-        // Clear results if query is empty
         if (query == null || query.trim().isEmpty()) {
             currentSearchResults.clear();
             view.showEmptyResults();
             return;
         }
 
-        // Check internet
-        if (!networkUtil.isNetworkAvailable()) {
-            view.showNoInternetError();
-            return;
-        }
         searchMealsByName(query.trim());
     }
     private void searchMealsByName(String query) {
@@ -124,13 +108,8 @@ public class SearchPresenter implements SearchContract.Presenter {
                                 error -> {
                                     view.hideLoading();
                                     Log.e(TAG, "Search error", error);
-
-                                    if (!networkUtil.isNetworkAvailable()) {
-                                        view.showNoInternetError();
-                                    } else {
                                         view.showError("Search failed: " + error.getMessage());
                                         view.showEmptyResults();
-                                    }
                                 }
                         )
         );

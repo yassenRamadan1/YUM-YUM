@@ -6,10 +6,14 @@ public interface MainContract {
         void navigateToWelcome();
         void showLoading();
         void hideLoading();
+        void showNetworkError();
+        void hideNetworkError();
     }
 
     interface Presenter {
         void checkAppStartDestination();
+        void startNetworkMonitoring();
+        void onDestinationChanged(int destinationId);
         void onDestroy();
     }
 }
