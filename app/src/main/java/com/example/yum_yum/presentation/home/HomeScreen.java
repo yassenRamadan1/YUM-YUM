@@ -57,6 +57,14 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
         presenter.attachView(this);
         initRecyclerView();
         presenter.getHomeContent();
+
+        binding.avatarImageView.setOnClickListener(v -> {
+            if(binding.usernameTextview.getText().toString().isEmpty() || binding.usernameTextview.getText().toString().equals("Guest")) {
+                Toast.makeText(getContext(), "Please log in to view your profile", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Navigation.findNavController(v).navigate(R.id.action_homeScreen_to_profileFragment);
+        });
     }
     private void initRecyclerView() {
         mealsAdapter = new CountryMealsAdapter(requireContext(), this);
@@ -110,6 +118,13 @@ public class HomeScreen extends Fragment implements HomeContract.View, OnMealCli
     @Override
     public void showError(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showUserName(String name) {
+        if (binding != null) {
+            binding.usernameTextview.setText(name);
+        }
     }
 
     private void navigateToDetails(Meal meal, ImageView sharedImage) {

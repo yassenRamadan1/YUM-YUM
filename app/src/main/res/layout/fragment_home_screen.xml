@@ -35,24 +35,27 @@
                 android:id="@+id/avatarImageView"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginEnd="@dimen/margin_large"
                 android:scaleType="centerCrop"
-                app:layout_constraintBottom_toTopOf="@+id/username_textview"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView"
-                app:shapeAppearanceOverlay="@style/CircleImageView"
                 android:src="@drawable/profile_image"
+                app:layout_constraintBottom_toTopOf="@+id/username_textview"
+                app:layout_constraintTop_toTopOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="@id/username_textview"
+                app:layout_constraintEnd_toEndOf="@id/username_textview"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                tools:layout_editor_absoluteX="345dp"
                 tools:srcCompat="@drawable/profile_image" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/username_textview"
-                app:layout_constraintEnd_toEndOf="@+id/avatarImageView"
-                app:layout_constraintStart_toStartOf="@+id/avatarImageView"
-                app:layout_constraintTop_toBottomOf="@+id/avatarImageView"
+                style="@style/Yum.Text.LabelNormal"
+                android:layout_width="100dp"
+                android:textAlignment="center"
+                android:lines="1"
+                android:layout_height="wrap_content"
                 android:text="@string/Guest"
-                style="@style/Yum.Text.LabelNormal"/>
+                android:layout_marginEnd="@dimen/margin_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/avatarImageView" />
 
             <TextView
                 android:layout_width="wrap_content"

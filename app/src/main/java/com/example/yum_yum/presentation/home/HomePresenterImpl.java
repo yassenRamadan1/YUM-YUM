@@ -4,6 +4,7 @@ import static io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThre
 
 import android.content.Context;
 
+import com.example.yum_yum.data.auth.repository.AuthRepository;
 import com.example.yum_yum.data.meals.dto.HomeContentData;
 import com.example.yum_yum.data.meals.repository.MealsRepository;
 
@@ -16,10 +17,13 @@ public class HomePresenterImpl implements HomeContract.Presenter {
     private final MealsRepository repository;
     private final CompositeDisposable disposables = new CompositeDisposable();
     private HomeContentData cachedHomeContent;
+    private String currentUserName;
+    private final AuthRepository authRepository;
     private boolean isLoading = false;
 
     private HomePresenterImpl(Context context) {
         this.repository = new MealsRepository(context.getApplicationContext());
+        this.authRepository = new AuthRepository(context.getApplicationContext());
     }
 
     public static HomePresenterImpl getInstance(Context context) {
@@ -49,6 +53,7 @@ public class HomePresenterImpl implements HomeContract.Presenter {
     public void detachView() {
         this.view = null;
     }
+
     @Override
     public void getHomeContent() {
         if (cachedHomeContent != null && !isLoading) {
@@ -58,6 +63,7 @@ public class HomePresenterImpl implements HomeContract.Presenter {
                         cachedHomeContent.getCountryMeals(),
                         cachedHomeContent.getCountryName()
                 );
+                view.showUserName(currentUserName);
                 view.hideLoading();
             }
             return;
@@ -92,6 +98,22 @@ public class HomePresenterImpl implements HomeContract.Presenter {
                                         view.showError(error.getMessage());
                                         view.hideLoading();
                                     }
+                                }
+                        )
+        );
+        disposables.add(
+                authRepository.getCurrentUserName()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(mainThread())
+                        .subscribe(
+                                name -> {
+                                    if (view != null) {
+                                        currentUserName = name;
+                                        view.showUserName(name);
+                                    };
+                                },
+                                error -> {
+                                    view.showError("cant return user name");
                                 }
                         )
         );
@@ -133,9 +155,11 @@ public class HomePresenterImpl implements HomeContract.Presenter {
                         )
         );
     }
+
     public void clearMemoryCache() {
         cachedHomeContent = null;
     }
+
     public boolean hasDataCached() {
         return cachedHomeContent != null;
     }

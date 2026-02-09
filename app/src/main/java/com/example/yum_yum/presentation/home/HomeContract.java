@@ -11,6 +11,7 @@ public interface HomeContract {
         void showDailyMeal(Meal meal);
         void showDailyCountryMeals(List<Meal> meals, String countryName);
         void showError(String message);
+        void showUserName(String name);
     }
 
     interface Presenter {
