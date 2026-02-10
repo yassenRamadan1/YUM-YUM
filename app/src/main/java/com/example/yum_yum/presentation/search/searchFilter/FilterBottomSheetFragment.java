@@ -1,28 +1,24 @@
 package com.example.yum_yum.presentation.search.searchFilter;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.yum_yum.R;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.yum_yum.R;
 import com.example.yum_yum.databinding.FragmentFilterBottomSheetBinding;
 import com.example.yum_yum.presentation.model.Category;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
+public class FilterBottomSheetFragment extends BottomSheetDialogFragment implements FilterContract.View {
 
     private static final String ARG_CATEGORIES = "categories";
     private static final String ARG_AREAS = "areas";
@@ -30,15 +26,7 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
 
     private FragmentFilterBottomSheetBinding binding;
     private FilterListener listener;
-
-    private List<Category> categories;
-    private List<String> areas;
-    private List<String> ingredients;
-
-    private final List<String> selectedCategories = new ArrayList<>();
-    private final List<String> selectedAreas = new ArrayList<>();
-    private final List<String> selectedIngredients = new ArrayList<>();
-
+    private FilterContract.Presenter presenter;
     public interface FilterListener {
         void onFiltersApplied(List<String> categories, List<String> areas, List<String> ingredients);
         void onFiltersReset();
@@ -62,16 +50,6 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         this.listener = listener;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            categories = (List<Category>) getArguments().getSerializable(ARG_CATEGORIES);
-            areas = getArguments().getStringArrayList(ARG_AREAS);
-            ingredients = getArguments().getStringArrayList(ARG_INGREDIENTS);
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,86 +61,83 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupCategories();
-        setupAreas();
-        setupIngredients();
+        presenter = new FilterPresenter(this);
+
+        List<Category> categories = null;
+        List<String> areas = null;
+        List<String> ingredients = null;
+
+        if (getArguments() != null) {
+            categories = (List<Category>) getArguments().getSerializable(ARG_CATEGORIES);
+            areas = getArguments().getStringArrayList(ARG_AREAS);
+            ingredients = getArguments().getStringArrayList(ARG_INGREDIENTS);
+        }
+        presenter.onViewCreated(categories, areas, ingredients);
         setupButtons();
     }
 
-    private void setupCategories() {
+
+    @Override
+    public void renderCategories(List<Category> categories) {
         binding.chipGroupCategories.removeAllViews();
-
-        if (categories != null) {
-            for (Category category : categories) {
-                Chip chip = createFilterChip(category.getName());
-                chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    if (isChecked) {
-                        selectedCategories.add(category.getName());
-                    } else {
-                        selectedCategories.remove(category.getName());
-                    }
-                });
-                binding.chipGroupCategories.addView(chip);
-            }
+        for (Category category : categories) {
+            Chip chip = createFilterChip(category.getName());
+            chip.setOnCheckedChangeListener((v, isChecked) ->
+                    presenter.onCategorySelected(category.getName(), isChecked));
+            binding.chipGroupCategories.addView(chip);
         }
     }
 
-    private void setupAreas() {
+    @Override
+    public void renderAreas(List<String> areas) {
         binding.chipGroupAreas.removeAllViews();
-
-        if (areas != null) {
-            for (String area : areas) {
-                Chip chip = createFilterChip(area);
-                chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    if (isChecked) {
-                        selectedAreas.add(area);
-                    } else {
-                        selectedAreas.remove(area);
-                    }
-                });
-                binding.chipGroupAreas.addView(chip);
-            }
+        for (String area : areas) {
+            Chip chip = createFilterChip(area);
+            chip.setOnCheckedChangeListener((v, isChecked) ->
+                    presenter.onAreaSelected(area, isChecked));
+            binding.chipGroupAreas.addView(chip);
         }
     }
 
-    private void setupIngredients() {
+    @Override
+    public void renderIngredients(List<String> ingredients) {
         binding.chipGroupIngredients.removeAllViews();
-        if (ingredients != null) {
-            int maxIngredients = Math.min(ingredients.size(), 30);
-            for (int i = 0; i < maxIngredients; i++) {
-                String ingredient = ingredients.get(i);
-                Chip chip = createFilterChip(ingredient);
-                chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    if (isChecked) {
-                        selectedIngredients.add(ingredient);
-                    } else {
-                        selectedIngredients.remove(ingredient);
-                    }
-                });
-                binding.chipGroupIngredients.addView(chip);
-            }
+        for (String ingredient : ingredients) {
+            Chip chip = createFilterChip(ingredient);
+            // Forward event to Presenter
+            chip.setOnCheckedChangeListener((v, isChecked) ->
+                    presenter.onIngredientSelected(ingredient, isChecked));
+            binding.chipGroupIngredients.addView(chip);
         }
     }
+
+    @Override
+    public void applyFiltersAndDismiss(List<String> categories, List<String> areas, List<String> ingredients) {
+        if (listener != null) {
+            listener.onFiltersApplied(categories, areas, ingredients);
+        }
+        dismiss();
+    }
+
+    @Override
+    public void resetFiltersAndDismiss() {
+        if (listener != null) {
+            listener.onFiltersReset();
+        }
+        dismiss();
+    }
+
+    @Override
+    public void clearAllChipSelections() {
+        uncheckAllChildren(binding.chipGroupCategories);
+        uncheckAllChildren(binding.chipGroupAreas);
+        uncheckAllChildren(binding.chipGroupIngredients);
+    }
+
 
     private void setupButtons() {
-        binding.buttonApplyFilters.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onFiltersApplied(
-                        new ArrayList<>(selectedCategories),
-                        new ArrayList<>(selectedAreas),
-                        new ArrayList<>(selectedIngredients)
-                );
-            }
-            dismiss();
-        });
-
-        binding.buttonResetFilters.setOnClickListener(v -> {
-            clearAllSelections();
-            if (listener != null) {
-                listener.onFiltersReset();
-            }
-            dismiss();
-        });
+        binding.buttonApplyFilters.setOnClickListener(v -> presenter.onApplyClicked());
+        binding.buttonResetFilters.setOnClickListener(v -> presenter.onResetClicked());
     }
 
     private Chip createFilterChip(String text) {
@@ -175,17 +150,7 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         return chip;
     }
 
-    private void clearAllSelections() {
-        selectedCategories.clear();
-        selectedAreas.clear();
-        selectedIngredients.clear();
-
-        clearChipGroup(binding.chipGroupCategories);
-        clearChipGroup(binding.chipGroupAreas);
-        clearChipGroup(binding.chipGroupIngredients);
-    }
-
-    private void clearChipGroup(com.google.android.material.chip.ChipGroup chipGroup) {
+    private void uncheckAllChildren(ChipGroup chipGroup) {
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             View view = chipGroup.getChildAt(i);
             if (view instanceof Chip) {
@@ -196,6 +161,7 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
 
     @Override
     public void onDestroyView() {
+        presenter.onDestroy();
         super.onDestroyView();
         binding = null;
     }
