@@ -5,6 +5,9 @@
 The app follows a clean **MVP (Model-View-Presenter)** architectural pattern supported by the **Repository Pattern** to ensure a clear separation of concerns and a seamless offline-first experience.
 
 ---
+<img width="1080" height="1920" alt="Blue Gradient Modern Smartphone With Hand Mockup Your Story" src="https://github.com/user-attachments/assets/3f275bca-37b4-44b2-820a-670976642e8a" />
+
+<img width="1080" height="1080" alt="UI Design Social Media Professional Mockup Promotion 3D" src="https://github.com/user-attachments/assets/42094f99-ec05-4e36-b3ae-747af4289bc6" />
 
 ## 👥 Team Members
 
